@@ -89,8 +89,8 @@ function TeamBlock({ title, players, won }: { title: string; players: Scoreboard
             <tr key={p.userId} style={{ background: i % 2 ? "rgba(255,255,255,.025)" : "transparent" }}>
               <td style={{ ...TD, textAlign: "left", padding: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px 8px 14px", borderLeft: `4px solid ${accent}` }}>
-                  <Link href={`/player/${p.userId}`} style={{ color: "var(--txt)", textDecoration: "none", fontWeight: 700, display: "inline-block", maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", verticalAlign: "middle" }}>{p.name}</Link>
                   <AgentIcon agent={p.agent} />
+                  <Link href={`/player/${p.userId}`} style={{ color: "var(--txt)", textDecoration: "none", fontWeight: 700, display: "inline-block", maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", verticalAlign: "middle" }}>{p.name}</Link>
                 </div>
               </td>
               <td style={{ ...TD, fontWeight: 800, color: ratingColor(p.rating) }}>{p.rating.toFixed(2)}</td>
