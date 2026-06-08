@@ -15,5 +15,6 @@ export async function fetchUserGuilds(accessToken: string): Promise<DiscordGuild
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   if (!res.ok) return [];
-  return (await res.json()) as DiscordGuild[];
+  const data = await res.json();
+  return Array.isArray(data) ? (data as DiscordGuild[]) : [];
 }
