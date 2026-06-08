@@ -4,6 +4,14 @@ import { QUEUE_LABELS } from "@/lib/db/types";
 
 type SocialKind = "twitch" | "twitter" | "youtube" | "vlr" | "tracker";
 
+function logoImg(url: string): React.CSSProperties {
+  return {
+    width: 22, height: 22, display: "block",
+    backgroundImage: `url("${url}")`, backgroundSize: "contain",
+    backgroundRepeat: "no-repeat", backgroundPosition: "center",
+  };
+}
+
 function SocialIcon({ kind }: { kind: SocialKind }) {
   switch (kind) {
     case "twitch":
@@ -25,15 +33,9 @@ function SocialIcon({ kind }: { kind: SocialKind }) {
         </svg>
       );
     case "tracker":
-      return (
-        <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden>
-          <circle cx="12" cy="12" r="7.5" />
-          <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
-          <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
-        </svg>
-      );
+      return <span aria-hidden style={logoImg("/icons/tracker.png")} />;
     case "vlr":
-      return <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: 0.3 }}>VLR</span>;
+      return <span aria-hidden style={logoImg("/icons/vlr.png")} />;
   }
 }
 
