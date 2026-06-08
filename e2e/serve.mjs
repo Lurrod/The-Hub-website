@@ -39,7 +39,7 @@ await client.close();
 const next = spawn("npm", ["run", "dev"], {
   stdio: "inherit",
   shell: true,
-  env: { ...process.env, MONGO_URL: uri },
+  env: { ...process.env, MONGO_URL: uri, AUTH_SECRET: "e2e-test-secret-not-real-0123456789abcdef" },
 });
 
 async function shutdown() {
