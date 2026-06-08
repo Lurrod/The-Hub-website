@@ -1,0 +1,51 @@
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import { MongoClient, ObjectId, type Document } from "mongodb";
+
+let mem: MongoMemoryServer;
+let client: MongoClient;
+
+function match(id: ObjectId, status: string, num: number, createdAt: Date) {
+  return {
+    _id: id, queue_type: "pro", map: "Ascent", status, match_number: num, created_at: createdAt,
+    team_a: [{ id: "1", name: "Alpha" }, { id: "2", name: "Bravo" }],
+    team_b: [{ id: "3", name: "Charlie" }, { id: "4", name: "Delta" }],
+  };
+}
+
+const PENDING = new ObjectId("0123456789abcdef0000a001");
+const CONTESTED = new ObjectId("0123456789abcdef0000a002");
+const VALIDATED = new ObjectId("0123456789abcdef0000a003");
+
+beforeAll(async () => {
+  mem = await MongoMemoryServer.create();
+  process.env.MONGO_URL = mem.getUri();
+  client = await new MongoClient(mem.getUri()).connect();
+  const db = client.db("elobot");
+  await db.collection("matches").insertMany([
+    match(PENDING, "pending", 10, new Date("2026-06-08T10:00:00Z")),
+    match(CONTESTED, "contested", 11, new Date("2026-06-08T11:00:00Z")),
+    match(VALIDATED, "validated_a", 9, new Date("2026-06-08T09:00:00Z")),
+  ] as unknown as Document[]);
+});
+
+afterAll(async () => { await client.close(); await mem.stop(); });
+
+describe("getOngoingMatches", () => {
+  it("returns only pending/contested matches, newest first", async () => {
+    const { getOngoingMatches } = await import("./ongoing");
+    const rows = await getOngoingMatches();
+    expect(rows.map((r) => r.status)).toEqual(["contested", "pending"]); // sorted by created_at desc
+    expect(rows.map((r) => r.matchNumber)).toEqual([11, 10]);
+  });
+
+  it("maps teams to id/name pairs", async () => {
+    const { getOngoingMatches } = await import("./ongoing");
+    const rows = await getOngoingMatches();
+    const pending = rows.find((r) => r.matchNumber === 10)!;
+    expect(pending.teamA.map((p) => p.name)).toEqual(["Alpha", "Bravo"]);
+    expect(pending.teamB.map((p) => p.id)).toEqual(["3", "4"]);
+    expect(pending.matchId).toBe(PENDING.toHexString());
+    expect(pending.map).toBe("Ascent");
+  });
+});

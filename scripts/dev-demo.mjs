@@ -153,6 +153,20 @@ await db.collection("match_player_stats").insertMany([
   dp(108, "Sage", false, 138, 0.74, 9, 15, 8, 22),
   dp(109, "Yoru", false, 120, 0.66, 8, 17, 3, 18),
 ]);
+// An in-progress (pending) match for the /matches page.
+const LIVE_MID = new ObjectId("0123456789abcdef0000aa01");
+await db.collection("matches").insertOne({
+  _id: LIVE_MID, queue_type: "pro", map: "Bind", status: "pending", match_number: 2,
+  created_at: new Date(Date.now() - 12 * 60 * 1000),
+  team_a: [
+    { id: "100", name: "Zephyr" }, { id: "101", name: "Ka" },
+    { id: "102", name: "SuperLongPlayerName" }, { id: "103", name: "Nova" }, { id: "104", name: "Vyn" },
+  ],
+  team_b: [
+    { id: "105", name: "Cypher" }, { id: "106", name: "xX_Sniper_Xx_2024" },
+    { id: "107", name: "Mo" }, { id: "108", name: "Frostbite" }, { id: "109", name: "Killjoy" },
+  ],
+});
 // Fake customized profiles (web_profiles) so player pages show the header.
 await db.collection("web_profiles").insertMany([
   {

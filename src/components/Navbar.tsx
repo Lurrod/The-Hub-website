@@ -17,6 +17,7 @@ export default async function Navbar() {
       <div style={{ marginLeft: "auto", display: "flex", gap: 22, fontWeight: 600, fontSize: 13, color: "var(--muted)" }}>
         <Link href="/" style={{ color: "inherit", textDecoration: "none" }}>Leaderboards</Link>
         <Link href="/stats" style={{ color: "inherit", textDecoration: "none" }}>Stats</Link>
+        <Link href="/matches" style={{ color: "inherit", textDecoration: "none" }}>Matches</Link>
       </div>
       {session ? (
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
