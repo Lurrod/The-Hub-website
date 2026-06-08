@@ -3,7 +3,11 @@ import { useState, useMemo } from "react";
 import type { PlayerStatLine } from "@/lib/stats/derive";
 import { fmt, fmtPct, ratingClass } from "@/components/format";
 
-type Key = "name" | "games" | "rating" | "adr" | "kd" | "kastPct" | "kpr" | "apr" | "fkpr" | "hsPct" | "elo";
+type Key = "name" | "games" | "rating" | "adr" | "kd" | "kastPct" | "kpr" | "apr" | "fkpr" | "fdpr" | "hsPct" | "elo";
+
+/** Date is serialized to a string across the RSC boundary, so the client table
+ * never receives `updatedAt` as a usable Date — exclude it from the prop. */
+type StatRow = Omit<PlayerStatLine, "updatedAt">;
 
 const COLS: { key: Key; label: string; left?: boolean }[] = [
   { key: "name", label: "Player", left: true },
@@ -15,11 +19,12 @@ const COLS: { key: Key; label: string; left?: boolean }[] = [
   { key: "kpr", label: "KPR" },
   { key: "apr", label: "APR" },
   { key: "fkpr", label: "FKPR" },
+  { key: "fdpr", label: "FDPR" },
   { key: "hsPct", label: "HS%" },
   { key: "elo", label: "ELO" },
 ];
 
-export default function StatsTable({ lines }: { lines: PlayerStatLine[] }) {
+export default function StatsTable({ lines }: { lines: StatRow[] }) {
   const [sortKey, setSortKey] = useState<Key>("rating");
   const [minGames, setMinGames] = useState(10);
 
@@ -33,7 +38,7 @@ export default function StatsTable({ lines }: { lines: PlayerStatLine[] }) {
     });
   }, [lines, sortKey, minGames]);
 
-  function cell(key: Key, l: PlayerStatLine) {
+  function cell(key: Key, l: StatRow) {
     switch (key) {
       case "name": return l.name;
       case "games": return l.games;
