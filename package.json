@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev -p 3000",
+    "dev:demo": "node scripts/dev-demo.mjs",
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "eslint",
