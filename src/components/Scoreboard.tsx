@@ -73,7 +73,11 @@ function TeamBlock({ title, players, won }: { title: string; players: Scoreboard
       <div style={{ padding: "11px 16px", fontWeight: 800, letterSpacing: .5, color: accent, borderBottom: "1px solid var(--line)" }}>
         {title}{won ? "  · WON" : ""}
       </div>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, tableLayout: "fixed" }}>
+        <colgroup>
+          <col style={{ width: 220 }} />
+          {COLS.map((c) => (<col key={c.key} style={c.key === "kda" ? { width: 96 } : undefined} />))}
+        </colgroup>
         <thead>
           <tr style={{ background: "rgba(255,255,255,.03)" }}>
             <th style={{ ...TH, textAlign: "left", paddingLeft: 18 }}>PLAYER</th>
@@ -85,7 +89,7 @@ function TeamBlock({ title, players, won }: { title: string; players: Scoreboard
             <tr key={p.userId} style={{ background: i % 2 ? "rgba(255,255,255,.025)" : "transparent" }}>
               <td style={{ ...TD, textAlign: "left", padding: 0 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px 8px 14px", borderLeft: `4px solid ${accent}` }}>
-                  <Link href={`/player/${p.userId}`} style={{ color: "var(--txt)", textDecoration: "none", fontWeight: 700, maxWidth: 170, overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</Link>
+                  <Link href={`/player/${p.userId}`} style={{ color: "var(--txt)", textDecoration: "none", fontWeight: 700, display: "inline-block", maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", verticalAlign: "middle" }}>{p.name}</Link>
                   <AgentIcon agent={p.agent} />
                 </div>
               </td>
