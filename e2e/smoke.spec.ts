@@ -1,7 +1,12 @@
 import { test, expect } from "@playwright/test";
 
-test("leaderboard renders and shows top player", async ({ page }) => {
+test("landing page shows the hero and CTAs", async ({ page }) => {
   await page.goto("/");
+  await expect(page.getByRole("link", { name: "View leaderboards" })).toBeVisible();
+});
+
+test("leaderboard renders and shows top player", async ({ page }) => {
+  await page.goto("/leaderboard");
   await expect(page.getByText("Leaderboard", { exact: true })).toBeVisible();
   await expect(page.getByText("Alpha")).toBeVisible();
 });
