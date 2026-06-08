@@ -5,7 +5,7 @@
 // This is ONLY for local preview. In production the site connects to the
 // bot's real `elobot` database via MONGO_URL.
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { spawn } from "node:child_process";
 
 const NAMES = [
@@ -94,6 +94,26 @@ for (const [queue, count, startId] of plan) {
 }
 await db.collection("player_rating_aggregates").insertMany(allAggs);
 await db.collection("elo").insertMany(allElos);
+const DEMO_MID = new ObjectId("0123456789abcdef0123dead");
+const dhex = DEMO_MID.toHexString();
+const demoWhen = new Date(Date.now() - 3600 * 1000);
+await db.collection("matches").insertOne({
+  _id: DEMO_MID, queue_type: "pro", map: "Haven", status: "validated_a", match_number: 1,
+  created_at: demoWhen,
+  team_a: [{ id: "100", name: NAMES[100 % NAMES.length] + "2" }],
+  team_b: [{ id: "101", name: NAMES[101 % NAMES.length] + "2" }],
+  score_a: 13, score_b: 7,
+  elo_results: { "100": { delta: 24, old: 2276, new: 2300, win: true }, "101": { delta: -16, old: 2216, new: 2200, win: false } },
+});
+const dp = (uid, agent, win, acs, rating) => ({
+  _id: `${dhex}:${uid}`, match_id: dhex, user_id: String(uid), queue_type: "pro", map: "Haven", agent,
+  rounds_played: 20, win, kills: 18, deaths: 12, assists: 6, damage_made: 3000, damage_received: 2700,
+  headshots: 35, bodyshots: 55, legshots: 8, first_kills: 3, first_deaths: 2, kast_rounds: 16,
+  acs, rating_2_0: rating, created_at: demoWhen,
+});
+await db.collection("match_player_stats").insertMany([
+  dp(100, "Raze", true, 270, 1.33), dp(101, "Sage", false, 175, 0.88),
+]);
 await client.close();
 
 console.log(`[dev:demo] Seeded ${allAggs.length} players across ${plan.length} queues.`);
