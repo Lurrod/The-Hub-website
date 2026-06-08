@@ -60,4 +60,6 @@ export interface WebProfile {
   vlr_url?: string;
   tracker_url?: string;
   updated_at?: Date;
+  discord_username?: string;
+  discord_avatar?: string | null;
 }

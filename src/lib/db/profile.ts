@@ -2,11 +2,16 @@ import { getDb } from "./client";
 import type { RatingAggregate, EloDoc, WebProfile } from "./types";
 import { buildStatLine, type PlayerStatLine } from "@/lib/stats/derive";
 
+function discordAvatarUrl(userId: string, hash?: string | null): string | null {
+  return hash ? `https://cdn.discordapp.com/avatars/${userId}/${hash}.png` : null;
+}
+
 export interface PlayerProfile {
   userId: string;
   name: string;
   queues: PlayerStatLine[];
   webProfile: WebProfile | null;
+  avatarUrl: string | null;
 }
 
 /** Full profile for a Discord user id, or null if the player is unknown. */
@@ -27,5 +32,5 @@ export async function getPlayerProfile(userId: string): Promise<PlayerProfile | 
   }
   queues.sort((a, b) => b.elo - a.elo);
   const name = queues[0]?.name ?? elos[0]?.name ?? userId;
-  return { userId, name, queues, webProfile: web ?? null };
+  return { userId, name, queues, webProfile: web ?? null, avatarUrl: discordAvatarUrl(userId, web?.discord_avatar) };
 }

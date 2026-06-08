@@ -25,7 +25,7 @@ beforeAll(async () => {
     { _id: "1:open", user_id: "1", queue_type: "open", elo: 2000, wins: 6, losses: 4, name: "Alpha" },
   ] as unknown as Document[]);
   await db.collection("web_profiles").insertOne({
-    _id: "1", bio: "gg", favorite_agent: "Jett", socials: { twitch: "alpha" },
+    _id: "1", bio: "gg", favorite_agent: "Jett", socials: { twitch: "alpha" }, discord_avatar: "abc123",
   } as unknown as Document);
 });
 
@@ -42,6 +42,7 @@ describe("getPlayerProfile", () => {
     expect(pro.elo).toBe(2300);
     expect(pro.rating).toBeCloseTo(24 / 20, 5);
     expect(p!.webProfile?.bio).toBe("gg");
+    expect(p!.avatarUrl).toBe("https://cdn.discordapp.com/avatars/1/abc123.png");
   });
 
   it("returns null for an unknown player", async () => {

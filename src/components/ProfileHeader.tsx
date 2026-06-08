@@ -51,7 +51,7 @@ export default function ProfileHeader({ profile }: { profile: PlayerProfile }) {
 
   return (
     <div className="glass" style={{ display: "flex", gap: 22, alignItems: "center", padding: 26, marginBottom: 16 }}>
-      <Avatar name={profile.name} size={92} />
+      <Avatar name={profile.name} size={92} src={profile.avatarUrl} />
       <div style={{ flex: 1 }}>
         <div className="teko" style={{ fontFamily: "var(--font-teko)", fontSize: 44, fontWeight: 700, lineHeight: 1 }}>
           {profile.name}
