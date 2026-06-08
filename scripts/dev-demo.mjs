@@ -167,6 +167,19 @@ await db.collection("matches").insertOne({
     { id: "107", name: "Mo" }, { id: "108", name: "Frostbite" }, { id: "109", name: "Killjoy" },
   ],
 });
+const LIVE_MID2 = new ObjectId("0123456789abcdef0000aa02");
+await db.collection("matches").insertOne({
+  _id: LIVE_MID2, queue_type: "semipro", map: "Lotus", status: "pending", match_number: 3,
+  created_at: new Date(Date.now() - 4 * 60 * 1000),
+  team_a: [
+    { id: "200", name: "Rho" }, { id: "201", name: "Sigma" }, { id: "202", name: "Tau" },
+    { id: "203", name: "Upsilon" }, { id: "204", name: "Phi" },
+  ],
+  team_b: [
+    { id: "205", name: "Chi" }, { id: "206", name: "Psi" }, { id: "207", name: "Omega" },
+    { id: "208", name: "Iota" }, { id: "209", name: "Theta" },
+  ],
+});
 // Fake customized profiles (web_profiles) so player pages show the header.
 await db.collection("web_profiles").insertMany([
   {
