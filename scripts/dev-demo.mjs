@@ -159,12 +159,12 @@ await db.collection("matches").insertOne({
   _id: LIVE_MID, queue_type: "pro", map: "Bind", status: "pending", match_number: 2,
   created_at: new Date(Date.now() - 12 * 60 * 1000),
   team_a: [
-    { id: "100", name: "Zephyr" }, { id: "101", name: "Ka" },
-    { id: "102", name: "SuperLongPlayerName" }, { id: "103", name: "Nova" }, { id: "104", name: "Vyn" },
+    { id: "100", name: "Zephyr", elo: 2300 }, { id: "101", name: "Ka", elo: 2100 },
+    { id: "102", name: "SuperLongPlayerName", elo: 2280 }, { id: "103", name: "Nova", elo: 1990 }, { id: "104", name: "Vyn", elo: 2010 },
   ],
   team_b: [
-    { id: "105", name: "Cypher" }, { id: "106", name: "xX_Sniper_Xx_2024" },
-    { id: "107", name: "Mo" }, { id: "108", name: "Frostbite" }, { id: "109", name: "Killjoy" },
+    { id: "105", name: "Cypher", elo: 2200 }, { id: "106", name: "xX_Sniper_Xx_2024", elo: 2120 },
+    { id: "107", name: "Mo", elo: 1900 }, { id: "108", name: "Frostbite", elo: 1965 }, { id: "109", name: "Killjoy", elo: 2020 },
   ],
 });
 const LIVE_MID2 = new ObjectId("0123456789abcdef0000aa02");
@@ -172,12 +172,12 @@ await db.collection("matches").insertOne({
   _id: LIVE_MID2, queue_type: "semipro", map: "Lotus", status: "pending", match_number: 3,
   created_at: new Date(Date.now() - 4 * 60 * 1000),
   team_a: [
-    { id: "200", name: "Rho" }, { id: "201", name: "Sigma" }, { id: "202", name: "Tau" },
-    { id: "203", name: "Upsilon" }, { id: "204", name: "Phi" },
+    { id: "200", name: "Rho", elo: 2150 }, { id: "201", name: "Sigma", elo: 2080 }, { id: "202", name: "Tau", elo: 1990 },
+    { id: "203", name: "Upsilon", elo: 1950 }, { id: "204", name: "Phi", elo: 1900 },
   ],
   team_b: [
-    { id: "205", name: "Chi" }, { id: "206", name: "Psi" }, { id: "207", name: "Omega" },
-    { id: "208", name: "Iota" }, { id: "209", name: "Theta" },
+    { id: "205", name: "Chi", elo: 2110 }, { id: "206", name: "Psi", elo: 2040 }, { id: "207", name: "Omega", elo: 1980 },
+    { id: "208", name: "Iota", elo: 1930 }, { id: "209", name: "Theta", elo: 1890 },
   ],
 });
 // Fake customized profiles (web_profiles) so player pages show the header.

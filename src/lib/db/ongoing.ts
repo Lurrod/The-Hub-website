@@ -7,6 +7,7 @@ const ONGOING_STATUSES = ["pending", "contested"] as const;
 export interface OngoingTeamPlayer {
   id: string;
   name: string;
+  elo: number | null;
 }
 
 export interface OngoingMatch {
@@ -21,7 +22,11 @@ export interface OngoingMatch {
 }
 
 function mapTeam(team: MatchTeamPlayer[] | undefined): OngoingTeamPlayer[] {
-  return (team ?? []).map((p) => ({ id: String(p.id), name: p.name ?? String(p.id) }));
+  return (team ?? []).map((p) => ({
+    id: String(p.id),
+    name: p.name ?? String(p.id),
+    elo: typeof p.elo === "number" ? p.elo : null,
+  }));
 }
 
 /** Matches currently in progress (pending / contested), newest first. */

@@ -8,8 +8,8 @@ let client: MongoClient;
 function match(id: ObjectId, status: string, num: number, createdAt: Date) {
   return {
     _id: id, queue_type: "pro", map: "Ascent", status, match_number: num, created_at: createdAt,
-    team_a: [{ id: "1", name: "Alpha" }, { id: "2", name: "Bravo" }],
-    team_b: [{ id: "3", name: "Charlie" }, { id: "4", name: "Delta" }],
+    team_a: [{ id: "1", name: "Alpha", elo: 2300 }, { id: "2", name: "Bravo", elo: 2100 }],
+    team_b: [{ id: "3", name: "Charlie", elo: 1950 }, { id: "4", name: "Delta" }],
   };
 }
 
@@ -45,6 +45,8 @@ describe("getOngoingMatches", () => {
     const pending = rows.find((r) => r.matchNumber === 10)!;
     expect(pending.teamA.map((p) => p.name)).toEqual(["Alpha", "Bravo"]);
     expect(pending.teamB.map((p) => p.id)).toEqual(["3", "4"]);
+    expect(pending.teamA[0].elo).toBe(2300);
+    expect(pending.teamB[1].elo).toBeNull(); // Delta has no elo in the doc
     expect(pending.matchId).toBe(PENDING.toHexString());
     expect(pending.map).toBe("Ascent");
   });

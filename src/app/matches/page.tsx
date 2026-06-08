@@ -5,17 +5,20 @@ import { relativeTime } from "@/lib/stats/match-line";
 
 export const dynamic = "force-dynamic";
 
-function TeamNames({ players, align }: { players: OngoingTeamPlayer[]; align: "left" | "right" }) {
+function TeamLines({ players, align }: { players: OngoingTeamPlayer[]; align: "left" | "right" }) {
   if (players.length === 0) return <span style={{ color: "var(--muted)" }}>—</span>;
   return (
-    <span style={{ display: "block", textAlign: align, lineHeight: 1.5 }}>
-      {players.map((p, i) => (
-        <span key={p.id}>
-          <Link href={`/player/${p.id}`} style={{ color: "var(--txt)", textDecoration: "none", fontWeight: 600 }}>{p.name}</Link>
-          {i < players.length - 1 ? <span style={{ color: "var(--muted)" }}>, </span> : null}
-        </span>
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      {players.map((p) => (
+        <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 8, flexDirection: align === "right" ? "row-reverse" : "row" }}>
+          <Link
+            href={`/player/${p.id}`}
+            style={{ color: "var(--txt)", textDecoration: "none", fontWeight: 600, flex: 1, minWidth: 0, textAlign: align, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+          >{p.name}</Link>
+          <span style={{ color: "var(--gold)", fontWeight: 700, fontSize: 12, fontFamily: "var(--font-teko)", flex: "0 0 auto" }}>{p.elo ?? "—"}</span>
+        </div>
       ))}
-    </span>
+    </div>
   );
 }
 
@@ -30,10 +33,10 @@ function MatchCard({ m }: { m: OngoingMatch }) {
         {m.status === "contested" && <span style={{ color: "var(--yellow)", fontSize: 11, fontWeight: 700 }}>contested</span>}
         <span style={{ marginLeft: "auto", color: "var(--muted)", fontSize: 11 }}>{relativeTime(m.createdAt)}</span>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", gap: 10, fontSize: 12 }}>
-        <TeamNames players={m.teamA} align="left" />
-        <span style={{ color: "var(--muted)", fontWeight: 700 }}>vs</span>
-        <TeamNames players={m.teamB} align="right" />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "start", gap: 12, fontSize: 12 }}>
+        <TeamLines players={m.teamA} align="left" />
+        <span style={{ color: "var(--muted)", fontWeight: 700, alignSelf: "center" }}>vs</span>
+        <TeamLines players={m.teamB} align="right" />
       </div>
     </div>
   );
