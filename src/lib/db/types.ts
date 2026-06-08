@@ -45,3 +45,16 @@ export interface EloDoc {
   losses: number;
   name: string;
 }
+
+/** Doc in `web_profiles` (`_id = discord user_id`). Read-only in Plan 2. */
+export interface WebProfile {
+  _id: string;
+  bio?: string;
+  favorite_agent?: string;
+  favorite_role?: string;
+  favorite_map?: string;
+  socials?: { twitch?: string; twitter?: string; youtube?: string };
+  vlr_url?: string;
+  tracker_url?: string;
+  updated_at?: Date;
+}
