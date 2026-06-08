@@ -13,7 +13,7 @@ export default function MatchHistory({ rows }: { rows: HistoryRow[] }) {
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
         <thead>
           <tr>
-            {["Result", "Map", "Agent", "Rating", "K-D-A", "ADR", "HS%", "ELO", "When"].map((h, i) => (
+            {["Result", "Map", "Agent", "Rating", "ACS", "K-D-A", "ADR", "HS%", "ELO", "When"].map((h, i) => (
               <th key={h} style={{ textAlign: i === 0 ? "left" : "right", padding: "12px", color: "var(--muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: .5, fontWeight: 800, whiteSpace: "nowrap" }}>{h}</th>
             ))}
           </tr>
@@ -29,6 +29,7 @@ export default function MatchHistory({ rows }: { rows: HistoryRow[] }) {
               <td style={{ padding: "11px 12px", textAlign: "right" }}>{r.map}</td>
               <td style={{ padding: "11px 12px", textAlign: "right" }}>{r.agent}</td>
               <td className={ratingClass(r.rating)} style={{ padding: "11px 12px", textAlign: "right", fontWeight: 700 }}>{fmt(r.rating)}</td>
+              <td style={{ padding: "11px 12px", textAlign: "right" }}>{Math.round(r.acs)}</td>
               <td style={{ padding: "11px 12px", textAlign: "right" }}>{r.kills}-{r.deaths}-{r.assists}</td>
               <td style={{ padding: "11px 12px", textAlign: "right" }}>{fmt(r.adr, 0)}</td>
               <td style={{ padding: "11px 12px", textAlign: "right" }}>{fmtPct(r.hsPct)}</td>

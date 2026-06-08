@@ -26,7 +26,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
             <tr>
-              {["Queue", "ELO", "W-L", "Games", "Rating", "ADR", "K/D", "KAST", "HS%"].map((h, i) => (
+              {["Queue", "ELO", "W-L", "Games", "Rating", "ACS", "ADR", "K/D", "KAST", "HS%"].map((h, i) => (
                 <th key={h} style={{ textAlign: i === 0 ? "left" : "right", padding: "12px", color: "var(--muted)", fontSize: 11, textTransform: "uppercase", letterSpacing: .5, fontWeight: 800 }}>{h}</th>
               ))}
             </tr>
@@ -39,6 +39,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
                 <td style={{ padding: "11px 12px", textAlign: "right" }}>{q.wins}-{q.losses}</td>
                 <td style={{ padding: "11px 12px", textAlign: "right" }}>{q.games}</td>
                 <td style={{ padding: "11px 12px", textAlign: "right" }}>{fmt(q.rating)}</td>
+                <td style={{ padding: "11px 12px", textAlign: "right" }}>{fmt(q.acs, 0)}</td>
                 <td style={{ padding: "11px 12px", textAlign: "right" }}>{fmt(q.adr, 0)}</td>
                 <td style={{ padding: "11px 12px", textAlign: "right" }}>{fmt(q.kd)}</td>
                 <td style={{ padding: "11px 12px", textAlign: "right" }}>{fmtPct(q.kastPct)}</td>
