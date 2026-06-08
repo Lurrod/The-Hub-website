@@ -1,11 +1,20 @@
 # Brainstorming companion artifacts
 .superpowers/
 
-# Node / Next.js (added once the app is scaffolded)
+# Node / Next.js
 node_modules/
 .next/
 out/
+build/
+next-env.d.ts
+*.tsbuildinfo
 .env
 .env*.local
 npm-debug.log*
 yarn-error.log*
+
+# Test / coverage artifacts
+coverage/
+test-results/
+playwright-report/
+.DS_Store
