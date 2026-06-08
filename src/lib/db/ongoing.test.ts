@@ -51,3 +51,13 @@ describe("getOngoingMatches", () => {
     expect(pending.map).toBe("Ascent");
   });
 });
+
+describe("getRecentMatches", () => {
+  it("returns only validated matches with a resolved winner, newest first", async () => {
+    const { getRecentMatches } = await import("./ongoing");
+    const rows = await getRecentMatches();
+    expect(rows.map((r) => r.matchNumber)).toEqual([9]); // only the validated_a match
+    expect(rows[0].winner).toBe("a");
+    expect(rows[0].teamA.map((p) => p.name)).toEqual(["Alpha", "Bravo"]);
+  });
+});

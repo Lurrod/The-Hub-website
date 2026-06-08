@@ -50,3 +50,40 @@ export async function getOngoingMatches(): Promise<OngoingMatch[]> {
     teamB: mapTeam(m.team_b),
   }));
 }
+
+export interface RecentMatch {
+  matchId: string;
+  matchNumber: number | null;
+  queueType: string;
+  map: string | null;
+  scoreA: number | null;
+  scoreB: number | null;
+  winner: "a" | "b" | null;
+  createdAt: Date;
+  teamA: OngoingTeamPlayer[];
+  teamB: OngoingTeamPlayer[];
+}
+
+/** Recently concluded matches (validated), newest first. */
+export async function getRecentMatches(limit = 20): Promise<RecentMatch[]> {
+  const db = await getDb();
+  const docs = await db
+    .collection<MatchDoc>("matches")
+    .find({ status: { $in: ["validated_a", "validated_b"] } })
+    .sort({ created_at: -1 })
+    .limit(limit)
+    .toArray();
+
+  return docs.map((m) => ({
+    matchId: m._id.toHexString(),
+    matchNumber: m.match_number ?? null,
+    queueType: m.queue_type,
+    map: m.map ?? null,
+    scoreA: m.score_a ?? null,
+    scoreB: m.score_b ?? null,
+    winner: m.status === "validated_a" ? "a" : m.status === "validated_b" ? "b" : null,
+    createdAt: m.created_at,
+    teamA: mapTeam(m.team_a),
+    teamB: mapTeam(m.team_b),
+  }));
+}

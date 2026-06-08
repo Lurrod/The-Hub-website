@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getOngoingMatches, type OngoingMatch, type OngoingTeamPlayer } from "@/lib/db/ongoing";
+import { getOngoingMatches, getRecentMatches, type OngoingMatch, type OngoingTeamPlayer, type RecentMatch } from "@/lib/db/ongoing";
 import { QUEUE_TYPES, QUEUE_LABELS, type QueueType } from "@/lib/db/types";
 import { relativeTime } from "@/lib/stats/match-line";
 import QueueMatches from "@/components/QueueMatches";
@@ -43,8 +43,31 @@ function MatchCard({ m }: { m: OngoingMatch }) {
   );
 }
 
+function RecentRow({ m }: { m: RecentMatch }) {
+  const hasScore = m.scoreA !== null && m.scoreB !== null;
+  return (
+    <Link href={`/match/${m.matchId}`} className="glass" style={{ display: "flex", alignItems: "center", gap: 14, padding: "11px 16px", textDecoration: "none", color: "var(--txt)", boxShadow: "none" }}>
+      <span className="teko" style={{ fontFamily: "var(--font-teko)", fontSize: 22, fontWeight: 700, lineHeight: 1, minWidth: 42 }}>{m.matchNumber ? `#${m.matchNumber}` : "—"}</span>
+      <span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 700 }}>{QUEUE_LABELS[m.queueType as QueueType]}{m.map ? ` · ${m.map}` : ""}</span>
+      <span style={{ marginLeft: "auto", fontFamily: "var(--font-teko)", fontSize: 22, fontWeight: 700 }}>
+        {hasScore ? (
+          <>
+            <span style={{ color: m.winner === "a" ? "var(--green)" : "var(--txt)" }}>{m.scoreA}</span>
+            <span style={{ color: "var(--muted)" }}> - </span>
+            <span style={{ color: m.winner === "b" ? "var(--green)" : "var(--txt)" }}>{m.scoreB}</span>
+          </>
+        ) : (
+          <span style={{ color: "var(--green)", fontSize: 13, fontWeight: 700 }}>{m.winner === "a" ? "Team A won" : m.winner === "b" ? "Team B won" : "—"}</span>
+        )}
+      </span>
+      <span style={{ color: "var(--muted)", fontSize: 12, minWidth: 64, textAlign: "right" }}>{relativeTime(m.createdAt)}</span>
+    </Link>
+  );
+}
+
 export default async function MatchesPage() {
   const matches = await getOngoingMatches();
+  const recent = await getRecentMatches(20);
   const byQueue = new Map<QueueType, OngoingMatch[]>();
   for (const m of matches) {
     const q = m.queueType as QueueType;
@@ -74,6 +97,17 @@ export default async function MatchesPage() {
             </div>
           );
         })
+      )}
+
+      <div style={{ textTransform: "uppercase", letterSpacing: 3, fontSize: 11, color: "var(--muted)", fontWeight: 700, margin: "28px 4px 12px" }}>
+        Recent matches
+      </div>
+      {recent.length === 0 ? (
+        <div className="glass" style={{ padding: 20, color: "var(--muted)" }}>No matches played yet.</div>
+      ) : (
+        <div style={{ display: "grid", gap: 8 }}>
+          {recent.map((m) => (<RecentRow key={m.matchId} m={m} />))}
+        </div>
       )}
     </>
   );

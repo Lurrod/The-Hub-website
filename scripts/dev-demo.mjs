@@ -213,6 +213,26 @@ function pushFake(prefix, queue, a, bteam, count, startNum) {
 pushFake("b1", "pro", proA, proB, 9, 20);
 pushFake("b2", "semipro", semiA, semiB, 4, 40);
 await db.collection("matches").insertMany(extra);
+// Finished matches (with scores) for the /matches history section.
+const finished = [];
+function pushFinished(prefix, queue, a, bteam, count, startNum) {
+  for (let i = 0; i < count; i++) {
+    const hx = (i + 1).toString(16).padStart(2, "0");
+    const aWins = i % 2 === 0;
+    finished.push({
+      _id: new ObjectId(`0123456789abcdef0000${prefix}${hx}`),
+      queue_type: queue, map: MAPS[(i + 3) % MAPS.length],
+      status: aWins ? "validated_a" : "validated_b",
+      match_number: startNum + i,
+      created_at: new Date(Date.now() - (i + 1) * 30 * 60 * 1000),
+      score_a: aWins ? 13 : 8 + (i % 4), score_b: aWins ? 8 + (i % 4) : 13,
+      team_a: a, team_b: bteam,
+    });
+  }
+}
+pushFinished("c1", "pro", proA, proB, 5, 30);
+pushFinished("c2", "semipro", semiA, semiB, 3, 50);
+await db.collection("matches").insertMany(finished);
 // Fake customized profiles (web_profiles) so player pages show the header.
 await db.collection("web_profiles").insertMany([
   {
