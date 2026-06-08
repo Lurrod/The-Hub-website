@@ -24,6 +24,7 @@ const agg: RatingAggregate = {
   first_deaths: 18,
   kast_rounds: 150,
   rating_2_0_sum: 11.5,
+  acs_sum: 2810,
   updated_at: new Date("2026-06-01T00:00:00Z"),
 };
 
@@ -50,6 +51,7 @@ describe("buildStatLine", () => {
     expect(s.games).toBe(10);
     expect(s.elo).toBe(2200);
     expect(s.rating).toBeCloseTo(1.15, 5);
+    expect(s.acs).toBeCloseTo(281, 5);
     expect(s.adr).toBeCloseTo(150, 5);
     expect(s.kd).toBeCloseTo(1.125, 5);
     expect(s.kastPct).toBeCloseTo(75, 5);
@@ -73,6 +75,7 @@ describe("buildStatLine", () => {
     };
     const s = buildStatLine(empty, elo);
     expect(s.rating).toBeNull();
+    expect(s.acs).toBeNull();
     expect(s.adr).toBeNull();
     expect(s.kd).toBeNull();
     expect(s.kastPct).toBeNull();
