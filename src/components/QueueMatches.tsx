@@ -1,19 +1,16 @@
 "use client";
 import { useRef, useState, useEffect, type ReactNode } from "react";
 
-function arrowStyle(side: "left" | "right"): React.CSSProperties {
-  return {
-    position: "absolute", top: "50%", transform: "translateY(-50%)",
-    ...(side === "left" ? { left: 0 } : { right: 0 }),
-    width: 30, height: 30, borderRadius: "50%", border: "1px solid var(--line)",
-    background: "rgba(10,15,20,.7)", color: "var(--txt)", cursor: "pointer",
-    fontSize: 18, lineHeight: "1", display: "grid", placeItems: "center", zIndex: 2,
-    backdropFilter: "blur(6px)",
-  };
+function Chevron({ dir }: { dir: "left" | "right" }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d={dir === "left" ? "M15 18l-6-6 6-6" : "M9 18l6-6-6-6"} />
+    </svg>
+  );
 }
 
-/** Horizontal strip of match cards with prev/next arrows shown only when the
- * content overflows the page width. */
+/** Horizontal strip of match cards with original slide arrows + edge fades,
+ * shown only when the content overflows the page width. */
 export default function QueueMatches({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const [overflow, setOverflow] = useState(false);
@@ -35,14 +32,20 @@ export default function QueueMatches({ children }: { children: ReactNode }) {
       <div
         ref={ref}
         className="noscrollbar"
-        style={{ display: "flex", gap: 12, overflowX: "auto", scrollBehavior: "smooth", padding: overflow ? "0 36px" : 0 }}
+        style={{ display: "flex", gap: 12, overflowX: "auto", scrollBehavior: "smooth", padding: overflow ? "0 42px" : 0 }}
       >
         {children}
       </div>
       {overflow && (
         <>
-          <button aria-label="Scroll left" onClick={() => scroll(-1)} style={arrowStyle("left")}>‹</button>
-          <button aria-label="Scroll right" onClick={() => scroll(1)} style={arrowStyle("right")}>›</button>
+          <div className="edge-fade left" />
+          <div className="edge-fade right" />
+          <button aria-label="Scroll left" className="slide-arrow" style={{ left: 0 }} onClick={() => scroll(-1)}>
+            <Chevron dir="left" />
+          </button>
+          <button aria-label="Scroll right" className="slide-arrow" style={{ right: 0 }} onClick={() => scroll(1)}>
+            <Chevron dir="right" />
+          </button>
         </>
       )}
     </div>

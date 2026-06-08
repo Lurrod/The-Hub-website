@@ -9,9 +9,9 @@ export const dynamic = "force-dynamic";
 function TeamLines({ players, align }: { players: OngoingTeamPlayer[]; align: "left" | "right" }) {
   if (players.length === 0) return <span style={{ color: "var(--muted)" }}>—</span>;
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, overflow: "hidden" }}>
       {players.map((p) => (
-        <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 8, flexDirection: align === "right" ? "row-reverse" : "row" }}>
+        <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0, flexDirection: align === "right" ? "row-reverse" : "row" }}>
           <Link
             href={`/player/${p.id}`}
             style={{ color: "var(--txt)", textDecoration: "none", fontWeight: 600, flex: 1, minWidth: 0, textAlign: align, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
@@ -25,7 +25,7 @@ function TeamLines({ players, align }: { players: OngoingTeamPlayer[]; align: "l
 
 function MatchCard({ m }: { m: OngoingMatch }) {
   return (
-    <div className="glass" style={{ padding: 12, width: 240, flex: "0 0 auto" }}>
+    <div className="glass" style={{ padding: 12, width: 240, flex: "0 0 auto", boxShadow: "none" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
         <span className="teko" style={{ fontFamily: "var(--font-teko)", fontSize: 20, fontWeight: 700, lineHeight: 1 }}>
           {m.matchNumber ? `#${m.matchNumber}` : "Match"}
