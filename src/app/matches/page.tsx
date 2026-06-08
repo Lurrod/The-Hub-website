@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getOngoingMatches, type OngoingMatch, type OngoingTeamPlayer } from "@/lib/db/ongoing";
 import { QUEUE_TYPES, QUEUE_LABELS, type QueueType } from "@/lib/db/types";
 import { relativeTime } from "@/lib/stats/match-line";
+import QueueMatches from "@/components/QueueMatches";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,7 @@ function TeamLines({ players, align }: { players: OngoingTeamPlayer[]; align: "l
 
 function MatchCard({ m }: { m: OngoingMatch }) {
   return (
-    <div className="glass" style={{ padding: 12, flex: "1 1 320px", minWidth: 300, maxWidth: 520 }}>
+    <div className="glass" style={{ padding: 12, width: 240, flex: "0 0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
         <span className="teko" style={{ fontFamily: "var(--font-teko)", fontSize: 20, fontWeight: 700, lineHeight: 1 }}>
           {m.matchNumber ? `#${m.matchNumber}` : "Match"}
@@ -67,9 +68,9 @@ export default async function MatchesPage() {
               <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1, color: "var(--muted)", fontWeight: 800, margin: "0 4px 8px" }}>
                 {QUEUE_LABELS[q]}
               </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+              <QueueMatches>
                 {ms.map((m) => (<MatchCard key={m.matchId} m={m} />))}
-              </div>
+              </QueueMatches>
             </div>
           );
         })

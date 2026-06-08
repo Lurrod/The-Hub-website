@@ -180,6 +180,39 @@ await db.collection("matches").insertOne({
     { id: "208", name: "Iota", elo: 1930 }, { id: "209", name: "Theta", elo: 1890 },
   ],
 });
+// Plenty of extra fake in-progress matches so the rows overflow (slider arrows).
+const MAPS = ["Ascent", "Bind", "Haven", "Split", "Lotus", "Sunset", "Icebox", "Breeze", "Abyss"];
+const proA = [
+  { id: "100", name: "Zephyr", elo: 2300 }, { id: "101", name: "Ka", elo: 2100 },
+  { id: "102", name: "SuperLongPlayerName", elo: 2280 }, { id: "103", name: "Nova", elo: 1990 }, { id: "104", name: "Vyn", elo: 2010 },
+];
+const proB = [
+  { id: "105", name: "Cypher", elo: 2200 }, { id: "106", name: "xX_Sniper_Xx_2024", elo: 2120 },
+  { id: "107", name: "Mo", elo: 1900 }, { id: "108", name: "Frostbite", elo: 1965 }, { id: "109", name: "Killjoy", elo: 2020 },
+];
+const semiA = [
+  { id: "200", name: "Rho", elo: 2150 }, { id: "201", name: "Sigma", elo: 2080 }, { id: "202", name: "Tau", elo: 1990 },
+  { id: "203", name: "Upsilon", elo: 1950 }, { id: "204", name: "Phi", elo: 1900 },
+];
+const semiB = [
+  { id: "205", name: "Chi", elo: 2110 }, { id: "206", name: "Psi", elo: 2040 }, { id: "207", name: "Omega", elo: 1980 },
+  { id: "208", name: "Iota", elo: 1930 }, { id: "209", name: "Theta", elo: 1890 },
+];
+const extra = [];
+function pushFake(prefix, queue, a, bteam, count, startNum) {
+  for (let i = 0; i < count; i++) {
+    const hx = (i + 1).toString(16).padStart(2, "0");
+    extra.push({
+      _id: new ObjectId(`0123456789abcdef0000${prefix}${hx}`),
+      queue_type: queue, map: MAPS[i % MAPS.length], status: "pending",
+      match_number: startNum + i, created_at: new Date(Date.now() - (i + 1) * 6 * 60 * 1000),
+      team_a: a, team_b: bteam,
+    });
+  }
+}
+pushFake("b1", "pro", proA, proB, 9, 20);
+pushFake("b2", "semipro", semiA, semiB, 4, 40);
+await db.collection("matches").insertMany(extra);
 // Fake customized profiles (web_profiles) so player pages show the header.
 await db.collection("web_profiles").insertMany([
   {

@@ -51,6 +51,9 @@ body {
 }
 .social:hover { color: #fff; border-color: var(--red); box-shadow: 0 0 14px #ff465544; }
 
+.noscrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.noscrollbar::-webkit-scrollbar { display: none; }
+
 .g { color: var(--green); }
 .y { color: var(--yellow); }
 .r { color: var(--red2); }
