@@ -153,6 +153,31 @@ await db.collection("match_player_stats").insertMany([
   dp(108, "Sage", false, 138, 0.74, 9, 15, 8, 22),
   dp(109, "Yoru", false, 120, 0.66, 8, 17, 3, 18),
 ]);
+// Fake customized profiles (web_profiles) so player pages show the header.
+await db.collection("web_profiles").insertMany([
+  {
+    _id: "100",
+    bio: "Duelist main, occasional IGL. Entry or nothing. Catch me live on Twitch most evenings.",
+    favorite_agent: "Jett", favorite_role: "Duelist", favorite_map: "Ascent",
+    socials: { twitch: "zephyr", twitter: "zephyrvalo", youtube: "https://youtube.com/@zephyr" },
+    vlr_url: "https://vlr.gg/player/12345/zephyr",
+    tracker_url: "https://tracker.gg/valorant/profile/riot/Zephyr%23EUW/overview",
+  },
+  {
+    _id: "101",
+    bio: "Sentinel diff. Lurk specialist.",
+    favorite_agent: "Killjoy", favorite_role: "Sentinel",
+    socials: { twitter: "ka_valo" },
+    tracker_url: "https://tracker.gg/valorant/profile/riot/Ka%231234/overview",
+  },
+  {
+    _id: "102",
+    bio: "Controller. Smokes on demand, clutches on request.",
+    favorite_agent: "Omen", favorite_role: "Controller", favorite_map: "Bind",
+    socials: { twitch: "longname", youtube: "https://youtube.com/@longname" },
+    vlr_url: "https://vlr.gg/player/999/longname",
+  },
+]);
 await client.close();
 
 console.log(`[dev:demo] Seeded ${allAggs.length} players across ${plan.length} queues.`);
