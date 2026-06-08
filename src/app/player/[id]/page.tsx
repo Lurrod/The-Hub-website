@@ -21,6 +21,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
   return (
     <>
       <ProfileHeader profile={profile} />
+      {profile.queues.length > 0 && (<>
       {eyebrow("Stats by queue")}
       <div className="glass" style={{ overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
@@ -49,6 +50,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
           </tbody>
         </table>
       </div>
+      </>)}
       {eyebrow("Recent matches")}
       <MatchHistory rows={history} />
     </>

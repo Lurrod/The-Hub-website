@@ -22,7 +22,8 @@ export async function getPlayerProfile(userId: string): Promise<PlayerProfile | 
     db.collection<EloDoc>("elo").find({ user_id: userId }).toArray(),
     db.collection<WebProfile>("web_profiles").findOne({ _id: userId }),
   ]);
-  if (aggs.length === 0 && elos.length === 0) return null;
+  // A profile exists if the player has match data OR a saved web profile.
+  if (aggs.length === 0 && elos.length === 0 && !web) return null;
 
   const eloById = new Map(elos.map((e) => [e._id, e]));
   const queues: PlayerStatLine[] = [];
@@ -31,6 +32,6 @@ export async function getPlayerProfile(userId: string): Promise<PlayerProfile | 
     if (elo) queues.push(buildStatLine(agg, elo));
   }
   queues.sort((a, b) => b.elo - a.elo);
-  const name = queues[0]?.name ?? elos[0]?.name ?? userId;
+  const name = queues[0]?.name ?? elos[0]?.name ?? web?.discord_username ?? userId;
   return { userId, name, queues, webProfile: web ?? null, avatarUrl: discordAvatarUrl(userId, web?.discord_avatar) };
 }

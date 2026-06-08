@@ -49,4 +49,14 @@ describe("getPlayerProfile", () => {
     const { getPlayerProfile } = await import("./profile");
     expect(await getPlayerProfile("999")).toBeNull();
   });
+
+  it("returns a profile for a player with only a web profile (no match data)", async () => {
+    await client.db("elobot").collection("web_profiles").insertOne({ _id: "77", bio: "new here", discord_username: "Newbie" } as unknown as Document);
+    const { getPlayerProfile } = await import("./profile");
+    const p = await getPlayerProfile("77");
+    expect(p).not.toBeNull();
+    expect(p!.name).toBe("Newbie");
+    expect(p!.queues).toEqual([]);
+    expect(p!.webProfile?.bio).toBe("new here");
+  });
 });
