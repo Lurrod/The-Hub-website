@@ -56,10 +56,14 @@ export default function ProfileHeader({ profile }: { profile: PlayerProfile }) {
         <div className="teko" style={{ fontFamily: "var(--font-teko)", fontSize: 44, fontWeight: 700, lineHeight: 1 }}>
           {profile.name}
         </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "10px 0" }}>
-          {wp?.favorite_role && <span style={chip}>{wp.favorite_role}</span>}
-          {wp?.favorite_agent && <span style={chip}>Main: {wp.favorite_agent}</span>}
-        </div>
+        {wp?.favorite_role && (
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "10px 0" }}>
+            <span style={{ ...chip, display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <span aria-hidden style={{ width: 16, height: 16, display: "block", backgroundImage: `url("/roles/${wp.favorite_role.toLowerCase()}.png")`, backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundPosition: "center" }} />
+              {wp.favorite_role}
+            </span>
+          </div>
+        )}
         {wp?.bio && <p style={{ color: "var(--muted)", margin: "0 0 8px", maxWidth: 640 }}>{wp.bio}</p>}
         {socials.length > 0 && (
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
