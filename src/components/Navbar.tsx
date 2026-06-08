@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SearchBox from "./SearchBox";
 
 export default function Navbar() {
   return (
@@ -9,13 +10,7 @@ export default function Navbar() {
       <Link href="/" style={{ fontFamily: "var(--font-teko)", fontSize: 28, fontWeight: 700, letterSpacing: 1, color: "var(--txt)", textDecoration: "none" }}>
         THE <b style={{ color: "var(--red)" }}>HUB</b>
       </Link>
-      <input
-        placeholder="🔍  Search player…"
-        style={{
-          background: "rgba(255,255,255,.05)", border: "1px solid var(--line)",
-          borderRadius: 999, padding: "8px 16px", color: "var(--muted)", fontSize: 12, minWidth: 240,
-        }}
-      />
+      <SearchBox />
       <div style={{ marginLeft: "auto", display: "flex", gap: 22, fontWeight: 600, fontSize: 13, color: "var(--muted)" }}>
         <Link href="/" style={{ color: "inherit", textDecoration: "none" }}>Leaderboards</Link>
         <Link href="/stats" style={{ color: "inherit", textDecoration: "none" }}>Stats</Link>
