@@ -103,6 +103,8 @@ await db.collection("matches").insertOne({
   team_a: [{ id: "100", name: NAMES[100 % NAMES.length] + "2" }],
   team_b: [{ id: "101", name: NAMES[101 % NAMES.length] + "2" }],
   score_a: 13, score_b: 7,
+  rounds: ["a","a","b","a","a","b","a","a","b","a","a","b","a","a","b","a","a","b","a","b"]
+    .map((w) => ({ winner: w, end: w === "a" ? "Eliminated" : "Bomb defused" })),
   elo_results: { "100": { delta: 24, old: 2276, new: 2300, win: true }, "101": { delta: -16, old: 2216, new: 2200, win: false } },
 });
 const dp = (uid, agent, win, acs, rating) => ({

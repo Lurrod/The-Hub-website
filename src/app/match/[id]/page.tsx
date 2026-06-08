@@ -3,6 +3,7 @@ import { getMatchDetail } from "@/lib/db/matches";
 import { QUEUE_LABELS } from "@/lib/db/types";
 import type { QueueType } from "@/lib/db/types";
 import Scoreboard from "@/components/Scoreboard";
+import RoundBar from "@/components/RoundBar";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +36,7 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
           <span style={{ ...teko(26), color: colorB, letterSpacing: 1 }}>TEAM B</span>
         </div>
       </div>
+      <RoundBar rounds={d.rounds} winner={d.winner} />
       <Scoreboard teamA={d.teamA} teamB={d.teamB} winner={d.winner} />
     </>
   );

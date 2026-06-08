@@ -36,6 +36,7 @@ beforeAll(async () => {
     team_b: [{ id: "3", name: "Charlie" }, { id: "4", name: "Delta" }],
     score_a: 13, score_b: 9,
     elo_results: { "1": { delta: 22, old: 2000, new: 2022, win: true }, "3": { delta: -18, old: 2100, new: 2082, win: false } },
+    rounds: [{ winner: "a", end: "Eliminated" }, { winner: "b", end: "Bomb defused" }],
   } as unknown as Document);
   await db.collection("match_player_stats").insertMany([
     pstat("1", { win: true }), pstat("2", { win: true }),
@@ -95,6 +96,8 @@ describe("getMatchDetail", () => {
     const a1 = d!.teamA.find((p) => p.userId === "1")!;
     expect(a1.name).toBe("Alpha");
     expect(a1.eloDelta).toBe(22);
+    expect(d!.rounds).toHaveLength(2);
+    expect(d!.rounds[0]).toEqual({ winner: "a", end: "Eliminated" });
   });
 
   it("returns null for a bad id or missing match", async () => {
@@ -112,6 +115,7 @@ describe("getMatchDetail", () => {
     expect(d!.scoreB).toBeNull();
     expect(d!.teamA.map((p) => p.userId)).toEqual(["5"]);
     expect(d!.teamA.find((p) => p.userId === "5")!.eloDelta).toBeNull();
+    expect(d!.rounds).toEqual([]);
   });
 
   it("resolves winner=null for a non-validated match", async () => {

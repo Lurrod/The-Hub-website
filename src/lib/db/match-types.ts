@@ -40,6 +40,14 @@ export interface EloResult {
   win: boolean;
 }
 
+/** Per-round outcome mapped to the bot's teams (from the bot's
+ * `compute_round_breakdown`). `winner` is "a"/"b"/"" and `end` is the raw
+ * Henrik end_type used to pick the outcome icon. */
+export interface RoundBreakdown {
+  winner: "a" | "b" | "";
+  end: string;
+}
+
 export interface MatchDoc {
   _id: ObjectId;
   team_a: MatchTeamPlayer[];
@@ -52,4 +60,5 @@ export interface MatchDoc {
   score_a?: number;
   score_b?: number;
   elo_results?: Record<string, EloResult>;
+  rounds?: RoundBreakdown[];
 }

@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { getDb } from "./client";
-import type { MatchPlayerStat, MatchDoc, MatchTeamPlayer } from "./match-types";
+import type { MatchPlayerStat, MatchDoc, MatchTeamPlayer, RoundBreakdown } from "./match-types";
 import { buildMatchLine, type MatchLine } from "@/lib/stats/match-line";
 
 export interface HistoryRow extends MatchLine {
@@ -64,6 +64,7 @@ export interface MatchDetail {
   scoreA: number | null;
   scoreB: number | null;
   winner: "a" | "b" | null;
+  rounds: RoundBreakdown[];
   teamA: ScoreboardPlayer[];
   teamB: ScoreboardPlayer[];
 }
@@ -111,6 +112,7 @@ export async function getMatchDetail(matchId: string): Promise<MatchDetail | nul
     scoreA: match.score_a ?? null,
     scoreB: match.score_b ?? null,
     winner,
+    rounds: match.rounds ?? [],
     teamA,
     teamB,
   };
