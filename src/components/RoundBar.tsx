@@ -49,7 +49,7 @@ function Square({ won, color, end }: { won: boolean; color: string; end: string 
 
 function Row({ rounds, team, color }: { rounds: RoundBreakdown[]; team: "a" | "b"; color: string }) {
   return (
-    <div style={{ display: "flex", gap: 4 }}>
+    <div style={{ display: "flex", gap: 4, justifyContent: "center" }}>
       {rounds.map((r, i) => (
         // Half-time gap after round 12, like the bot / VLR.
         <span key={i} style={{ marginLeft: i === 12 ? 14 : 0, display: "inline-flex" }}>
