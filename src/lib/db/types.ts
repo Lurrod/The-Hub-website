@@ -32,6 +32,9 @@ export interface RatingAggregate {
   first_deaths: number;
   kast_rounds: number;
   rating_2_0_sum: number;
+  /** Sum of per-match ACS; present only on aggregates updated after the bot
+   * started accumulating it (older docs lack it → season ACS shows as null). */
+  acs_sum?: number;
   updated_at: Date;
 }
 
@@ -44,4 +47,17 @@ export interface EloDoc {
   wins: number;
   losses: number;
   name: string;
+}
+
+/** Doc in `web_profiles` (`_id = discord user_id`). Read-only in Plan 2. */
+export interface WebProfile {
+  _id: string;
+  bio?: string;
+  favorite_agent?: string;
+  favorite_role?: string;
+  favorite_map?: string;
+  socials?: { twitch?: string; twitter?: string; youtube?: string };
+  vlr_url?: string;
+  tracker_url?: string;
+  updated_at?: Date;
 }

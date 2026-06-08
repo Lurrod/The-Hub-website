@@ -5,7 +5,7 @@
 // This is ONLY for local preview. In production the site connects to the
 // bot's real `elobot` database via MONGO_URL.
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { spawn } from "node:child_process";
 
 const NAMES = [
@@ -49,6 +49,7 @@ function makePlayer(userId, queue, name, skill, daysAgo) {
       multikills_4k: Math.round(games * 0.05), multikills_5k: 0,
       first_kills: firstKills, first_deaths: firstDeaths,
       kast_rounds: kastRounds, rating_2_0_sum: Number((ratingAvg * games).toFixed(2)),
+      acs_sum: Math.round(150 + skill * 130) * games,
       updated_at: new Date(Date.now() - daysAgo * 24 * 3600 * 1000),
     },
     elo: {
@@ -94,6 +95,89 @@ for (const [queue, count, startId] of plan) {
 }
 await db.collection("player_rating_aggregates").insertMany(allAggs);
 await db.collection("elo").insertMany(allElos);
+const DEMO_MID = new ObjectId("0123456789abcdef0123dead");
+const dhex = DEMO_MID.toHexString();
+const demoWhen = new Date(Date.now() - 3600 * 1000);
+await db.collection("matches").insertOne({
+  _id: DEMO_MID, queue_type: "pro", map: "Haven", status: "validated_a", match_number: 1,
+  created_at: demoWhen,
+  // 5v5 with deliberately varied name lengths to stress-test scoreboard alignment.
+  team_a: [
+    { id: "100", name: "Zephyr" },
+    { id: "101", name: "Ka" },
+    { id: "102", name: "SuperLongPlayerName" },
+    { id: "103", name: "Nova" },
+    { id: "104", name: "Vyn" },
+  ],
+  team_b: [
+    { id: "105", name: "Cypher" },
+    { id: "106", name: "xX_Sniper_Xx_2024" },
+    { id: "107", name: "Mo" },
+    { id: "108", name: "Frostbite" },
+    { id: "109", name: "Killjoy" },
+  ],
+  score_a: 13, score_b: 7,
+  rounds: ["a","a","b","a","a","b","a","a","b","a","a","b","a","a","b","a","a","b","a","b"]
+    .map((w) => ({ winner: w, end: w === "a" ? "Eliminated" : "Bomb defused" })),
+  elo_results: {
+    "100": { delta: 24, old: 2276, new: 2300, win: true },
+    "101": { delta: 22, old: 2078, new: 2100, win: true },
+    "102": { delta: 26, old: 2274, new: 2300, win: true },
+    "103": { delta: 18, old: 1982, new: 2000, win: true },
+    "104": { delta: 20, old: 1980, new: 2000, win: true },
+    "105": { delta: -16, old: 2216, new: 2200, win: false },
+    "106": { delta: -20, old: 2120, new: 2100, win: false },
+    "107": { delta: -22, old: 1922, new: 1900, win: false },
+    "108": { delta: -15, old: 1965, new: 1950, win: false },
+    "109": { delta: -18, old: 2018, new: 2000, win: false },
+  },
+});
+const dp = (uid, agent, win, acs, rating, k, d, a, hs = 28) => ({
+  _id: `${dhex}:${uid}`, match_id: dhex, user_id: String(uid), queue_type: "pro", map: "Haven", agent,
+  rounds_played: 20, win, kills: k, deaths: d, assists: a,
+  damage_made: Math.round(acs * 14), damage_received: Math.round(acs * 12),
+  headshots: hs, bodyshots: 55, legshots: 8,
+  first_kills: Math.max(0, Math.round((acs - 180) / 45)), first_deaths: 2,
+  kast_rounds: Math.min(20, Math.round(12 + rating * 4)),
+  acs, rating_2_0: rating, created_at: demoWhen,
+});
+await db.collection("match_player_stats").insertMany([
+  dp(100, "Jett", true, 281, 1.41, 24, 13, 6, 41),
+  dp(101, "Raze", true, 233, 1.26, 18, 13, 9, 40),
+  dp(102, "Omen", true, 256, 1.31, 18, 11, 5, 17),
+  dp(103, "Sova", true, 198, 1.10, 15, 14, 8, 33),
+  dp(104, "Killjoy", true, 176, 1.04, 13, 12, 7, 24),
+  dp(105, "Reyna", false, 211, 1.05, 17, 16, 2, 42),
+  dp(106, "Astra", false, 184, 0.93, 14, 15, 6, 19),
+  dp(107, "Cypher", false, 160, 0.79, 11, 16, 5, 34),
+  dp(108, "Sage", false, 138, 0.74, 9, 15, 8, 22),
+  dp(109, "Yoru", false, 120, 0.66, 8, 17, 3, 18),
+]);
+// Fake customized profiles (web_profiles) so player pages show the header.
+await db.collection("web_profiles").insertMany([
+  {
+    _id: "100",
+    bio: "Duelist main, occasional IGL. Entry or nothing. Catch me live on Twitch most evenings.",
+    favorite_agent: "Jett", favorite_role: "Duelist", favorite_map: "Ascent",
+    socials: { twitch: "zephyr", twitter: "zephyrvalo", youtube: "https://youtube.com/@zephyr" },
+    vlr_url: "https://vlr.gg/player/12345/zephyr",
+    tracker_url: "https://tracker.gg/valorant/profile/riot/Zephyr%23EUW/overview",
+  },
+  {
+    _id: "101",
+    bio: "Sentinel diff. Lurk specialist.",
+    favorite_agent: "Killjoy", favorite_role: "Sentinel",
+    socials: { twitter: "ka_valo" },
+    tracker_url: "https://tracker.gg/valorant/profile/riot/Ka%231234/overview",
+  },
+  {
+    _id: "102",
+    bio: "Controller. Smokes on demand, clutches on request.",
+    favorite_agent: "Omen", favorite_role: "Controller", favorite_map: "Bind",
+    socials: { twitch: "longname", youtube: "https://youtube.com/@longname" },
+    vlr_url: "https://vlr.gg/player/999/longname",
+  },
+]);
 await client.close();
 
 console.log(`[dev:demo] Seeded ${allAggs.length} players across ${plan.length} queues.`);

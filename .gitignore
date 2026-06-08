@@ -18,3 +18,10 @@ coverage/
 test-results/
 playwright-report/
 .DS_Store
+
+# Claude / agent tooling & local design docs (kept locally, not in the repo)
+CLAUDE.md
+AGENTS.md
+.claude/
+.superpowers/
+docs/superpowers/

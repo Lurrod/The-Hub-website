@@ -6,6 +6,7 @@ export interface PlayerStatLine {
   name: string;
   games: number;
   rating: number | null;
+  acs: number | null;
   adr: number | null;
   kd: number | null;
   kastPct: number | null;
@@ -39,6 +40,7 @@ export function buildStatLine(agg: RatingAggregate, elo: EloDoc): PlayerStatLine
     name: elo.name,
     games: agg.games,
     rating: safeDiv(agg.rating_2_0_sum, agg.games),
+    acs: agg.acs_sum != null ? safeDiv(agg.acs_sum, agg.games) : null,
     adr: safeDiv(agg.damage_made, r),
     kd: safeDiv(agg.kills, agg.deaths),
     kastPct: pct(agg.kast_rounds, r),

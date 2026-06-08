@@ -5,7 +5,7 @@ import type { PlayerStatLine } from "./derive";
 function line(over: Partial<PlayerStatLine>): PlayerStatLine {
   return {
     userId: "x", queueType: "pro", name: "X", games: 10,
-    rating: 1, adr: 100, kd: 1, kastPct: 70, kpr: 0.8, apr: 0.3,
+    rating: 1, acs: 200, adr: 100, kd: 1, kastPct: 70, kpr: 0.8, apr: 0.3,
     fkpr: 0.1, fdpr: 0.1, hsPct: 25, elo: 2000, wins: 5, losses: 5,
     updatedAt: new Date(), ...over,
   };

@@ -1,5 +1,5 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { spawn } from "node:child_process";
 
 const mem = await MongoMemoryServer.create();
@@ -14,6 +14,25 @@ await db.collection("player_rating_aggregates").insertMany([
 await db.collection("elo").insertMany([
   { _id: "1:pro", user_id: "1", queue_type: "pro", elo: 2300, wins: 12, losses: 8, name: "Alpha" },
   { _id: "2:pro", user_id: "2", queue_type: "pro", elo: 2100, wins: 9, losses: 9, name: "Bravo" },
+]);
+const MID = new ObjectId("0123456789abcdef01234567");
+const hex = MID.toHexString();
+await db.collection("matches").insertOne({
+  _id: MID, queue_type: "pro", map: "Ascent", status: "validated_a", match_number: 1,
+  created_at: now,
+  team_a: [{ id: "1", name: "Alpha" }], team_b: [{ id: "2", name: "Bravo" }],
+  score_a: 13, score_b: 9,
+  elo_results: { "1": { delta: 22, old: 2278, new: 2300, win: true }, "2": { delta: -18, old: 2118, new: 2100, win: false } },
+});
+const pstat = (uid, agent, win, acs, rating) => ({
+  _id: `${hex}:${uid}`, match_id: hex, user_id: uid, queue_type: "pro", map: "Ascent", agent,
+  rounds_played: 22, win, kills: 20, deaths: 14, assists: 5, damage_made: 3300, damage_received: 3000,
+  headshots: 40, bodyshots: 60, legshots: 10, first_kills: 3, first_deaths: 2, kast_rounds: 17,
+  acs, rating_2_0: rating, created_at: now,
+});
+await db.collection("match_player_stats").insertMany([
+  pstat("1", "Jett", true, 281, 1.41),
+  pstat("2", "Omen", false, 180, 0.92),
 ]);
 await client.close();
 

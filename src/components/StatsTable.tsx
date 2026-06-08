@@ -1,9 +1,10 @@
 "use client";
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import type { PlayerStatLine } from "@/lib/stats/derive";
 import { fmt, fmtPct, ratingClass } from "@/components/format";
 
-type Key = "name" | "games" | "rating" | "adr" | "kd" | "kastPct" | "kpr" | "apr" | "fkpr" | "fdpr" | "hsPct" | "elo";
+type Key = "name" | "games" | "rating" | "acs" | "adr" | "kd" | "kastPct" | "kpr" | "apr" | "fkpr" | "fdpr" | "hsPct" | "elo";
 
 /** Date is serialized to a string across the RSC boundary, so the client table
  * never receives `updatedAt` as a usable Date — exclude it from the prop. */
@@ -13,6 +14,7 @@ const COLS: { key: Key; label: string; left?: boolean }[] = [
   { key: "name", label: "Player", left: true },
   { key: "games", label: "GP" },
   { key: "rating", label: "Rating" },
+  { key: "acs", label: "ACS" },
   { key: "adr", label: "ADR" },
   { key: "kd", label: "K/D" },
   { key: "kastPct", label: "KAST" },
@@ -45,6 +47,7 @@ export default function StatsTable({ lines }: { lines: StatRow[] }) {
       case "elo": return l.elo;
       case "kastPct": return fmtPct(l.kastPct);
       case "hsPct": return fmtPct(l.hsPct);
+      case "acs": return fmt(l.acs, 0);
       case "adr": return fmt(l.adr, 0);
       case "rating": return fmt(l.rating);
       default: return fmt(l[key] as number | null);
@@ -86,7 +89,9 @@ export default function StatsTable({ lines }: { lines: StatRow[] }) {
                     textAlign: c.left ? "left" : "right", padding: "11px 12px",
                     fontWeight: c.key === "name" || c.key === "rating" || c.key === "elo" ? 700 : 400,
                     color: c.key === "elo" ? "var(--gold)" : undefined, whiteSpace: "nowrap",
-                  }}>{cell(c.key, l)}</td>
+                  }}>{c.key === "name"
+                    ? <Link href={`/player/${l.userId}`} style={{ color: "var(--txt)", textDecoration: "none" }}>{l.name}</Link>
+                    : cell(c.key, l)}</td>
                 ))}
               </tr>
             ))}
