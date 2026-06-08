@@ -7,8 +7,8 @@ export default function Navbar() {
       position: "sticky", top: 14, zIndex: 5, display: "flex", alignItems: "center",
       gap: 18, margin: "14px auto 0", maxWidth: 1100, padding: "12px 22px", borderRadius: 16,
     }}>
-      <Link href="/" style={{ fontFamily: "var(--font-teko)", fontSize: 28, fontWeight: 700, letterSpacing: 1, color: "var(--txt)", textDecoration: "none" }}>
-        THE <b style={{ color: "var(--red)" }}>HUB</b>
+      <Link href="/" aria-label="The Hub — home" style={{ display: "flex", alignItems: "center", flex: "0 0 auto" }}>
+        <span aria-hidden style={{ width: 42, height: 42, display: "block", backgroundImage: 'url("/fl_logo.png")', backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundPosition: "center" }} />
       </Link>
       <SearchBox />
       <div style={{ marginLeft: "auto", display: "flex", gap: 22, fontWeight: 600, fontSize: 13, color: "var(--muted)" }}>
