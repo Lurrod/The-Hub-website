@@ -9,8 +9,9 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
   );
 }
 
-/** Horizontal strip of match cards. When it overflows, glass arrows appear
- * BESIDE the strip (not over the cards), using the row's free space. */
+/** Horizontal strip of match cards. The card strip spans the full content
+ * width; when it overflows, glass arrows appear in the page margins just
+ * OUTSIDE the strip (left/right of the main column). */
 export default function QueueMatches({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const [overflow, setOverflow] = useState(false);
@@ -27,22 +28,27 @@ export default function QueueMatches({ children }: { children: ReactNode }) {
 
   const scroll = (dir: number) => ref.current?.scrollBy({ left: dir * 280, behavior: "smooth" });
 
+  const arrowPos = (side: "left" | "right"): React.CSSProperties => ({
+    position: "absolute", top: "50%", transform: "translateY(-50%)", zIndex: 3,
+    ...(side === "left" ? { left: -50 } : { right: -50 }),
+  });
+
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+    <div style={{ position: "relative" }}>
       {overflow && (
-        <button aria-label="Scroll left" className="slide-arrow" onClick={() => scroll(-1)}>
+        <button aria-label="Scroll left" className="slide-arrow" style={arrowPos("left")} onClick={() => scroll(-1)}>
           <Chevron dir="left" />
         </button>
       )}
       <div
         ref={ref}
         className="noscrollbar"
-        style={{ flex: 1, minWidth: 0, display: "flex", gap: 12, overflowX: "auto", scrollBehavior: "smooth" }}
+        style={{ display: "flex", gap: 12, overflowX: "auto", scrollBehavior: "smooth" }}
       >
         {children}
       </div>
       {overflow && (
-        <button aria-label="Scroll right" className="slide-arrow" onClick={() => scroll(1)}>
+        <button aria-label="Scroll right" className="slide-arrow" style={arrowPos("right")} onClick={() => scroll(1)}>
           <Chevron dir="right" />
         </button>
       )}
