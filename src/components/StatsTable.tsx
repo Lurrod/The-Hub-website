@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import type { PlayerStatLine } from "@/lib/stats/derive";
 import { fmt, fmtPct, ratingClass } from "@/components/format";
 
@@ -86,7 +87,9 @@ export default function StatsTable({ lines }: { lines: StatRow[] }) {
                     textAlign: c.left ? "left" : "right", padding: "11px 12px",
                     fontWeight: c.key === "name" || c.key === "rating" || c.key === "elo" ? 700 : 400,
                     color: c.key === "elo" ? "var(--gold)" : undefined, whiteSpace: "nowrap",
-                  }}>{cell(c.key, l)}</td>
+                  }}>{c.key === "name"
+                    ? <Link href={`/player/${l.userId}`} style={{ color: "var(--txt)", textDecoration: "none" }}>{l.name}</Link>
+                    : cell(c.key, l)}</td>
                 ))}
               </tr>
             ))}

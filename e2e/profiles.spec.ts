@@ -8,11 +8,11 @@ test("profile page shows stats and match history", async ({ page }) => {
   await expect(page.getByText("Ascent")).toBeVisible();
 });
 
-test("match detail shows both teams and a player", async ({ page }) => {
+test("match detail shows both teams' players", async ({ page }) => {
   await page.goto("/match/0123456789abcdef01234567");
-  await expect(page.getByText("Team A", { exact: false })).toBeVisible();
-  await expect(page.getByText("Team B", { exact: false })).toBeVisible();
-  await expect(page.getByText("Jett")).toBeVisible();
+  // Players from team A and team B are rendered in the scoreboard.
+  await expect(page.getByText("Alpha")).toBeVisible();
+  await expect(page.getByText("Bravo")).toBeVisible();
 });
 
 test("search finds a player and links to the profile", async ({ page }) => {

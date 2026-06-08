@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getQueueStatLines } from "@/lib/db/players";
 import { rankLeaderboard } from "@/lib/stats/leaderboard";
 import { QUEUE_TYPES, type QueueType } from "@/lib/db/types";
@@ -43,7 +44,9 @@ export default async function Home({
             {lines.map((l, i) => (
               <tr key={l.userId} style={{ borderTop: "1px solid rgba(255,255,255,.07)" }}>
                 <td style={{ padding: "11px 12px", color: i < 3 ? "var(--gold)" : "var(--muted)", fontWeight: 700 }}>{i + 1}</td>
-                <td style={{ padding: "11px 12px", fontWeight: 700 }}>{l.name}</td>
+                <td style={{ padding: "11px 12px", fontWeight: 700 }}>
+                  <Link href={`/player/${l.userId}`} style={{ color: "var(--txt)", textDecoration: "none" }}>{l.name}</Link>
+                </td>
                 <td style={{ padding: "11px 12px", textAlign: "right", color: "var(--gold)", fontWeight: 700 }}>{l.elo}</td>
                 <td style={{ padding: "11px 12px", textAlign: "right" }}>{l.wins}-{l.losses}</td>
                 <td style={{ padding: "11px 12px", textAlign: "right" }}>{fmt(l.rating)}</td>

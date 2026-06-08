@@ -11,23 +11,29 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
   const d = await getMatchDetail(id);
   if (!d) notFound();
 
-  const title = d.matchNumber ? `Match #${d.matchNumber}` : "Match";
-  const score = d.scoreA !== null && d.scoreB !== null ? `${d.scoreA} - ${d.scoreB}` : null;
+  const subtitle = [QUEUE_LABELS[d.queueType as QueueType], d.matchNumber ? `Match #${d.matchNumber}` : null]
+    .filter(Boolean)
+    .join(" · ");
+  const colorA = d.winner === "a" ? "var(--green)" : d.winner === "b" ? "var(--red2)" : "var(--txt)";
+  const colorB = d.winner === "b" ? "var(--green)" : d.winner === "a" ? "var(--red2)" : "var(--txt)";
+  const teko = (size: number): React.CSSProperties => ({ fontFamily: "var(--font-teko)", fontWeight: 700, lineHeight: 1, fontSize: size });
 
   return (
     <>
-      <div className="glass" style={{ display: "flex", alignItems: "center", gap: 16, padding: 22, marginBottom: 16 }}>
-        <div>
-          <div className="teko" style={{ fontFamily: "var(--font-teko)", fontSize: 40, fontWeight: 700, lineHeight: 1 }}>{title}</div>
-          <div style={{ color: "var(--muted)", marginTop: 4 }}>{QUEUE_LABELS[d.queueType as QueueType]} · {d.map}</div>
+      {/* Header band — mirrors the bot scoreboard header (team · score · map · score · team). */}
+      <div className="glass" style={{ display: "flex", alignItems: "center", padding: "18px 26px", marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16, flex: 1 }}>
+          <span style={{ ...teko(26), color: colorA, letterSpacing: 1 }}>TEAM A</span>
+          {d.scoreA !== null && <span style={{ ...teko(50), color: colorA }}>{d.scoreA}</span>}
         </div>
-        {score && (
-          <div className="teko" style={{ marginLeft: "auto", fontFamily: "var(--font-teko)", fontSize: 44, fontWeight: 700 }}>
-            <span style={{ color: d.winner === "a" ? "var(--green)" : "var(--txt)" }}>{d.scoreA}</span>
-            <span style={{ color: "var(--muted)" }}> - </span>
-            <span style={{ color: d.winner === "b" ? "var(--green)" : "var(--txt)" }}>{d.scoreB}</span>
-          </div>
-        )}
+        <div style={{ textAlign: "center", flex: "0 0 auto", padding: "0 24px" }}>
+          <div style={teko(26)}>{d.map}</div>
+          <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: "var(--muted)", fontWeight: 700, marginTop: 4 }}>{subtitle}</div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 16, flex: 1 }}>
+          {d.scoreB !== null && <span style={{ ...teko(50), color: colorB }}>{d.scoreB}</span>}
+          <span style={{ ...teko(26), color: colorB, letterSpacing: 1 }}>TEAM B</span>
+        </div>
       </div>
       <Scoreboard teamA={d.teamA} teamB={d.teamB} winner={d.winner} />
     </>
