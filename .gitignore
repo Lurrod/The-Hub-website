@@ -1,0 +1,11 @@
+# Brainstorming companion artifacts
+.superpowers/
+
+# Node / Next.js (added once the app is scaffolded)
+node_modules/
+.next/
+out/
+.env
+.env*.local
+npm-debug.log*
+yarn-error.log*
