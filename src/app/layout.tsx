@@ -15,9 +15,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${inter.variable} ${teko.variable}`}>
-        <div className="bgfx">
-          <div className="orb a" /><div className="orb b" /><div className="orb c" /><div className="orb d" />
-        </div>
         <div className="grain" />
         <Navbar />
         <main style={{ maxWidth: 1100, margin: "0 auto", padding: 24 }}>{children}</main>
