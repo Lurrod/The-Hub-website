@@ -6,6 +6,12 @@ let mem: MongoMemoryServer;
 let client: MongoClient;
 const MID = new ObjectId("0123456789abcdef01234567");
 const hex = MID.toHexString();
+// validated_b, older match with no score_a/score_b and no elo_results.
+const MID2 = new ObjectId("0123456789abcdef0123bb02");
+const hex2 = MID2.toHexString();
+// non-validated (contested) match -> winner should resolve to null.
+const MID3 = new ObjectId("0123456789abcdef0123cc03");
+const hex3 = MID3.toHexString();
 
 function pstat(uid: string, over: Record<string, unknown>) {
   return {
@@ -35,6 +41,24 @@ beforeAll(async () => {
     pstat("1", { win: true }), pstat("2", { win: true }),
     pstat("3", { win: false }), pstat("4", { win: false }),
   ] as unknown as Document[]);
+
+  // Older match: validated_b, no score / no elo_results.
+  await db.collection("matches").insertOne({
+    _id: MID2, queue_type: "pro", map: "Bind", status: "validated_b", match_number: 7,
+    created_at: new Date("2026-06-07T10:00:00Z"),
+    team_a: [{ id: "5", name: "Echo" }], team_b: [{ id: "6", name: "Foxtrot" }],
+  } as unknown as Document);
+  await db.collection("match_player_stats").insertMany([
+    pstat("5", { _id: `${hex2}:5`, match_id: hex2, map: "Bind", win: false }),
+    pstat("6", { _id: `${hex2}:6`, match_id: hex2, map: "Bind", win: true }),
+  ] as unknown as Document[]);
+
+  // Non-validated match (no winner).
+  await db.collection("matches").insertOne({
+    _id: MID3, queue_type: "open", map: "Split", status: "contested", match_number: 8,
+    created_at: new Date("2026-06-07T09:00:00Z"),
+    team_a: [{ id: "7" }], team_b: [{ id: "8" }],
+  } as unknown as Document);
 });
 
 afterAll(async () => { await client.close(); await mem.stop(); });
@@ -77,5 +101,33 @@ describe("getMatchDetail", () => {
     const { getMatchDetail } = await import("./matches");
     expect(await getMatchDetail("not-an-objectid")).toBeNull();
     expect(await getMatchDetail("0123456789abcdef0123dead")).toBeNull();
+  });
+
+  it("resolves winner='b' and null score/eloDelta for an older validated_b match", async () => {
+    const { getMatchDetail } = await import("./matches");
+    const d = await getMatchDetail(hex2);
+    expect(d).not.toBeNull();
+    expect(d!.winner).toBe("b");
+    expect(d!.scoreA).toBeNull();
+    expect(d!.scoreB).toBeNull();
+    expect(d!.teamA.map((p) => p.userId)).toEqual(["5"]);
+    expect(d!.teamA.find((p) => p.userId === "5")!.eloDelta).toBeNull();
+  });
+
+  it("resolves winner=null for a non-validated match", async () => {
+    const { getMatchDetail } = await import("./matches");
+    const d = await getMatchDetail(hex3);
+    expect(d).not.toBeNull();
+    expect(d!.winner).toBeNull();
+  });
+});
+
+describe("getPlayerMatchHistory — absent score/elo_results", () => {
+  it("returns null eloDelta and null scoreLine when the parent match lacks them", async () => {
+    const { getPlayerMatchHistory } = await import("./matches");
+    const rows = await getPlayerMatchHistory("5", { limit: 10 });
+    expect(rows).toHaveLength(1);
+    expect(rows[0].eloDelta).toBeNull();
+    expect(rows[0].scoreLine).toBeNull();
   });
 });
