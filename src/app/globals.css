@@ -54,21 +54,19 @@ body {
 .noscrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 .noscrollbar::-webkit-scrollbar { display: none; }
 
-/* Original slide arrows for the /matches carousel */
+/* Glass slide arrows for the /matches carousel (sit beside the card strip) */
 .slide-arrow {
-  position: absolute; top: 50%; transform: translateY(-50%) rotate(45deg);
-  width: 34px; height: 34px; border: 1px solid var(--line); cursor: pointer; z-index: 3;
-  display: grid; place-items: center; color: #fff;
-  border-radius: 11px;
-  background: linear-gradient(135deg, var(--red), #b9303b);
-  box-shadow: 0 6px 18px rgba(255, 70, 85, .35);
-  transition: transform .18s ease, box-shadow .18s ease;
+  flex: 0 0 auto;
+  width: 38px; height: 38px; border-radius: 12px;
+  border: 1px solid var(--line); cursor: pointer;
+  display: grid; place-items: center; color: var(--muted);
+  background: var(--glass);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  transition: border-color .15s, color .15s, background .15s;
 }
-.slide-arrow:hover { transform: translateY(-50%) rotate(45deg) scale(1.1); box-shadow: 0 8px 26px rgba(255, 70, 85, .6); }
-.slide-arrow svg { transform: rotate(-45deg); width: 16px; height: 16px; }
-.edge-fade { position: absolute; top: 0; bottom: 0; width: 64px; pointer-events: none; z-index: 1; }
-.edge-fade.left { left: 0; background: linear-gradient(90deg, #05080d 30%, transparent); }
-.edge-fade.right { right: 0; background: linear-gradient(270deg, #05080d 30%, transparent); }
+.slide-arrow:hover { color: #fff; border-color: var(--red); background: rgba(255, 255, 255, .10); }
+.slide-arrow svg { width: 16px; height: 16px; }
 
 .g { color: var(--green); }
 .y { color: var(--yellow); }

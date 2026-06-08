@@ -9,8 +9,8 @@ function Chevron({ dir }: { dir: "left" | "right" }) {
   );
 }
 
-/** Horizontal strip of match cards with original slide arrows + edge fades,
- * shown only when the content overflows the page width. */
+/** Horizontal strip of match cards. When it overflows, glass arrows appear
+ * BESIDE the strip (not over the cards), using the row's free space. */
 export default function QueueMatches({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const [overflow, setOverflow] = useState(false);
@@ -28,25 +28,23 @@ export default function QueueMatches({ children }: { children: ReactNode }) {
   const scroll = (dir: number) => ref.current?.scrollBy({ left: dir * 280, behavior: "smooth" });
 
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      {overflow && (
+        <button aria-label="Scroll left" className="slide-arrow" onClick={() => scroll(-1)}>
+          <Chevron dir="left" />
+        </button>
+      )}
       <div
         ref={ref}
         className="noscrollbar"
-        style={{ display: "flex", gap: 12, overflowX: "auto", scrollBehavior: "smooth", padding: overflow ? "0 42px" : 0 }}
+        style={{ flex: 1, minWidth: 0, display: "flex", gap: 12, overflowX: "auto", scrollBehavior: "smooth" }}
       >
         {children}
       </div>
       {overflow && (
-        <>
-          <div className="edge-fade left" />
-          <div className="edge-fade right" />
-          <button aria-label="Scroll left" className="slide-arrow" style={{ left: 0 }} onClick={() => scroll(-1)}>
-            <Chevron dir="left" />
-          </button>
-          <button aria-label="Scroll right" className="slide-arrow" style={{ right: 0 }} onClick={() => scroll(1)}>
-            <Chevron dir="right" />
-          </button>
-        </>
+        <button aria-label="Scroll right" className="slide-arrow" onClick={() => scroll(1)}>
+          <Chevron dir="right" />
+        </button>
       )}
     </div>
   );
