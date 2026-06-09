@@ -1,8 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { searchPlayers } from "@/lib/db/search";
 import Avatar from "@/components/Avatar";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Search" };
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const q = ((await searchParams).q ?? "").trim();
@@ -11,7 +13,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   return (
     <>
       <div style={{ textTransform: "uppercase", letterSpacing: 3, fontSize: 11, color: "var(--muted)", fontWeight: 700, margin: "22px 4px 12px" }}>
-        {q ? `Search — "${q}"` : "Search"}
+        {q ? `Search - "${q}"` : "Search"}
       </div>
       {q && hits.length === 0 && <div className="glass" style={{ padding: 20, color: "var(--muted)" }}>No players found.</div>}
       <div style={{ display: "grid", gap: 10 }}>

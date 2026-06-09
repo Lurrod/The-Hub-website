@@ -18,7 +18,7 @@ describe("updateWebProfile", () => {
     const { updateWebProfile } = await import("./profile-write");
     await updateWebProfile(
       "42",
-      { bio: "hello", favorite_role: "Duelist", favorite_agent: "Jett", socials: { twitch: "z" }, vlr_url: "", tracker_url: "" },
+      { bio: "hello", favorite_role: "Duelist", socials: { twitch: "z" }, vlr_url: "", tracker_url: "" },
       { username: "Zephyr", avatar: "abc" },
     );
     const db = client.db("elobot");
@@ -31,7 +31,7 @@ describe("updateWebProfile", () => {
 
     await updateWebProfile(
       "42",
-      { bio: "updated", favorite_role: "", favorite_agent: "", socials: {}, vlr_url: "", tracker_url: "" },
+      { bio: "updated", favorite_role: "", socials: {}, vlr_url: "", tracker_url: "" },
       { username: "Zephyr", avatar: "abc" },
     );
     const doc2 = await db.collection<WebProfile & { discord_username?: string; discord_avatar?: string | null }>("web_profiles").findOne({ _id: "42" });

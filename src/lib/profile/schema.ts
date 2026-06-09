@@ -2,12 +2,6 @@ import { z } from "zod";
 
 export const ROLES = ["Duelist", "Initiator", "Controller", "Sentinel"] as const;
 
-export const AGENTS = [
-  "Astra", "Breach", "Brimstone", "Chamber", "Clove", "Cypher", "Deadlock", "Fade",
-  "Gekko", "Harbor", "Iso", "Jett", "KAY/O", "Killjoy", "Neon", "Omen", "Phoenix",
-  "Raze", "Reyna", "Sage", "Skye", "Sova", "Tejo", "Viper", "Vyse", "Waylay", "Yoru",
-] as const;
-
 const handle = z
   .string()
   .trim()
@@ -38,7 +32,6 @@ function urlOnDomain(domains: string[]) {
 export const profileSchema = z.object({
   bio: z.string().trim().max(280).optional().default(""),
   favorite_role: z.enum(ROLES).or(z.literal("")).optional().default(""),
-  favorite_agent: z.enum(AGENTS).or(z.literal("")).optional().default(""),
   twitch: handle.optional().default(""),
   twitter: handle.optional().default(""),
   youtube: urlOnDomain(["youtube.com", "youtu.be"]).optional().default(""),

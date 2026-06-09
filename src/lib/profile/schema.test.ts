@@ -4,7 +4,6 @@ import { profileSchema, ROLES } from "./schema";
 const ok = {
   bio: "gg wp",
   favorite_role: "Duelist",
-  favorite_agent: "Jett",
   twitch: "zephyr",
   twitter: "zephyr",
   youtube: "https://youtube.com/@zephyr",
@@ -30,7 +29,7 @@ describe("profileSchema", () => {
     expect(profileSchema.safeParse({ ...ok, youtube: "https://evil.com" }).success).toBe(false);
   });
   it("allows all-empty optional fields", () => {
-    expect(profileSchema.safeParse({ favorite_role: "", favorite_agent: "", bio: "", twitch: "", twitter: "", youtube: "", vlr_url: "", tracker_url: "" }).success).toBe(true);
+    expect(profileSchema.safeParse({ favorite_role: "", bio: "", twitch: "", twitter: "", youtube: "", vlr_url: "", tracker_url: "" }).success).toBe(true);
   });
   it("exposes the four roles", () => {
     expect(ROLES).toEqual(["Duelist", "Initiator", "Controller", "Sentinel"]);

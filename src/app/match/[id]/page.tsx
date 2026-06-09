@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getMatchDetail } from "@/lib/db/matches";
 import { QUEUE_LABELS } from "@/lib/db/types";
@@ -6,6 +7,12 @@ import Scoreboard from "@/components/Scoreboard";
 import RoundBar from "@/components/RoundBar";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const d = await getMatchDetail(id);
+  return { title: d?.matchNumber ? `Match #${d.matchNumber}` : "Match" };
+}
 
 export default async function MatchPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -21,7 +28,7 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
 
   return (
     <>
-      {/* Header band — mirrors the bot scoreboard header (team · score · map · score · team). */}
+      {/* Header band - mirrors the bot scoreboard header (team · score · map · score · team). */}
       <div className="glass" style={{ display: "flex", alignItems: "center", padding: "18px 26px", marginBottom: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16, flex: 1 }}>
           <span style={{ ...teko(26), color: colorA, letterSpacing: 1 }}>TEAM A</span>

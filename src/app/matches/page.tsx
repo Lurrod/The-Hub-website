@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getOngoingMatches, getRecentMatches, type OngoingMatch, type OngoingTeamPlayer, type RecentMatch } from "@/lib/db/ongoing";
 import { QUEUE_TYPES, QUEUE_LABELS, type QueueType } from "@/lib/db/types";
@@ -5,9 +6,10 @@ import { relativeTime } from "@/lib/stats/match-line";
 import QueueMatches from "@/components/QueueMatches";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Matches" };
 
 function TeamLines({ players, align }: { players: OngoingTeamPlayer[]; align: "left" | "right" }) {
-  if (players.length === 0) return <span style={{ color: "var(--muted)" }}>—</span>;
+  if (players.length === 0) return <span style={{ color: "var(--muted)" }}>-</span>;
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0, overflow: "hidden" }}>
       {players.map((p) => (
@@ -16,7 +18,7 @@ function TeamLines({ players, align }: { players: OngoingTeamPlayer[]; align: "l
             href={`/player/${p.id}`}
             style={{ color: "var(--txt)", textDecoration: "none", fontWeight: 600, flex: 1, minWidth: 0, textAlign: align, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
           >{p.name}</Link>
-          <span style={{ color: "var(--gold)", fontWeight: 700, fontSize: 12, fontFamily: "var(--font-teko)", flex: "0 0 auto" }}>{p.elo ?? "—"}</span>
+          <span style={{ color: "var(--gold)", fontWeight: 700, fontSize: 12, fontFamily: "var(--font-teko)", flex: "0 0 auto" }}>{p.elo ?? "-"}</span>
         </div>
       ))}
     </div>
@@ -47,8 +49,8 @@ function RecentRow({ m }: { m: RecentMatch }) {
   const hasScore = m.scoreA !== null && m.scoreB !== null;
   return (
     <Link href={`/match/${m.matchId}`} className="glass" style={{ display: "flex", alignItems: "center", gap: 14, padding: "11px 16px", textDecoration: "none", color: "var(--txt)", boxShadow: "none" }}>
-      <span className="teko" style={{ fontFamily: "var(--font-teko)", fontSize: 22, fontWeight: 700, lineHeight: 1, minWidth: 42 }}>{m.matchNumber ? `#${m.matchNumber}` : "—"}</span>
-      <span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 700 }}>{QUEUE_LABELS[m.queueType as QueueType]}{m.map ? ` · ${m.map}` : ""}</span>
+      <span className="teko" style={{ fontFamily: "var(--font-teko)", fontSize: 22, fontWeight: 700, lineHeight: 1, minWidth: 42 }}>{m.matchNumber ? `#${m.matchNumber}` : "-"}</span>
+      {m.map && <span style={{ color: "var(--muted)", fontSize: 12, fontWeight: 700 }}>{m.map}</span>}
       <span style={{ marginLeft: "auto", fontFamily: "var(--font-teko)", fontSize: 22, fontWeight: 700 }}>
         {hasScore ? (
           <>
@@ -57,7 +59,7 @@ function RecentRow({ m }: { m: RecentMatch }) {
             <span style={{ color: m.winner === "b" ? "var(--green)" : "var(--txt)" }}>{m.scoreB}</span>
           </>
         ) : (
-          <span style={{ color: "var(--green)", fontSize: 13, fontWeight: 700 }}>{m.winner === "a" ? "Team A won" : m.winner === "b" ? "Team B won" : "—"}</span>
+          <span style={{ color: "var(--green)", fontSize: 13, fontWeight: 700 }}>{m.winner === "a" ? "Team A won" : m.winner === "b" ? "Team B won" : "-"}</span>
         )}
       </span>
       <span style={{ color: "var(--muted)", fontSize: 12, minWidth: 64, textAlign: "right" }}>{relativeTime(m.createdAt)}</span>
@@ -73,6 +75,12 @@ export default async function MatchesPage() {
     const q = m.queueType as QueueType;
     if (!byQueue.has(q)) byQueue.set(q, []);
     byQueue.get(q)!.push(m);
+  }
+  const recentByQueue = new Map<QueueType, RecentMatch[]>();
+  for (const m of recent) {
+    const q = m.queueType as QueueType;
+    if (!recentByQueue.has(q)) recentByQueue.set(q, []);
+    recentByQueue.get(q)!.push(m);
   }
 
   return (
@@ -105,9 +113,20 @@ export default async function MatchesPage() {
       {recent.length === 0 ? (
         <div className="glass" style={{ padding: 20, color: "var(--muted)" }}>No matches played yet.</div>
       ) : (
-        <div style={{ display: "grid", gap: 8 }}>
-          {recent.map((m) => (<RecentRow key={m.matchId} m={m} />))}
-        </div>
+        QUEUE_TYPES.map((q) => {
+          const ms = recentByQueue.get(q);
+          if (!ms || ms.length === 0) return null;
+          return (
+            <div key={q} style={{ marginBottom: 18 }}>
+              <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 1, color: "var(--muted)", fontWeight: 800, margin: "0 4px 8px" }}>
+                {QUEUE_LABELS[q]}
+              </div>
+              <div style={{ display: "grid", gap: 8 }}>
+                {ms.map((m) => (<RecentRow key={m.matchId} m={m} />))}
+              </div>
+            </div>
+          );
+        })
       )}
     </>
   );

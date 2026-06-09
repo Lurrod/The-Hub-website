@@ -33,13 +33,18 @@ function Square({ won, color, end }: { won: boolean; color: string; end: string 
       }}
     >
       {icon && (
+        // The source PNGs are near-white, which vanishes on the bright won
+        // squares. Recolour them to a dark tint via mask for strong contrast.
         <span
           aria-hidden
           style={{
             width: 13, height: 13,
-            backgroundImage: `url("${icon}")`, backgroundSize: "contain",
-            backgroundRepeat: "no-repeat", backgroundPosition: "center",
-            opacity: 0.92,
+            backgroundColor: "#0b1119",
+            WebkitMaskImage: `url("${icon}")`,
+            maskImage: `url("${icon}")`,
+            WebkitMaskSize: "contain", maskSize: "contain",
+            WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
+            WebkitMaskPosition: "center", maskPosition: "center",
           }}
         />
       )}

@@ -1,13 +1,12 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { saveProfile, type SaveResult } from "@/app/me/actions";
-import { ROLES, AGENTS } from "@/lib/profile/schema";
+import { ROLES } from "@/lib/profile/schema";
 
 interface Initial {
   bio: string;
   favorite_role: string;
-  favorite_agent: string;
   twitch: string;
   twitter: string;
   youtube: string;
@@ -68,6 +67,43 @@ export default function MeForm({
     null,
   );
 
+  // error-state-shake: shake the Save button + reveal the message when the
+  // server action returns a validation error, then auto-revert on a hold timer.
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  useEffect(() => {
+    if (!state) return;
+    const wrap = wrapRef.current;
+    const btn = btnRef.current;
+    if (state.ok === false) {
+      setErrorMsg(state.error);
+      if (!wrap || !btn) return;
+      wrap.classList.add("is-error");
+      btn.classList.remove("is-shaking");
+      void btn.offsetWidth; // force reflow so the shake replays
+      btn.classList.add("is-shaking");
+
+      const cs = getComputedStyle(document.documentElement);
+      const ms = (name: string, fb: number) => {
+        const v = parseFloat(cs.getPropertyValue(name));
+        return Number.isFinite(v) ? v : fb;
+      };
+      const shakeMs = ms("--shake-dur-a", 80) * 2 + ms("--shake-dur-b", 60) * 2;
+      const t1 = setTimeout(() => btn.classList.remove("is-shaking"), shakeMs + 20);
+      const t2 = setTimeout(
+        () => wrap.classList.remove("is-error"),
+        shakeMs + ms("--revert-hold", 3000),
+      );
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
+    }
+    wrap?.classList.remove("is-error");
+  }, [state]);
+
   return (
     <form
       action={action}
@@ -84,28 +120,16 @@ export default function MeForm({
         />
       </Field>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        <Field label="Favorite role">
-          <select name="favorite_role" defaultValue={initial.favorite_role} style={input}>
-            <option value="">—</option>
-            {ROLES.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Favorite agent">
-          <select name="favorite_agent" defaultValue={initial.favorite_agent} style={input}>
-            <option value="">—</option>
-            {AGENTS.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
-          </select>
-        </Field>
-      </div>
+      <Field label="Favorite role">
+        <select name="favorite_role" defaultValue={initial.favorite_role} style={input}>
+          <option value="">-</option>
+          {ROLES.map((r) => (
+            <option key={r} value={r}>
+              {r}
+            </option>
+          ))}
+        </select>
+      </Field>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         <Field label="Twitch (handle)">
@@ -141,19 +165,35 @@ export default function MeForm({
         />
       </Field>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <button type="submit" disabled={pending} style={btn}>
-          {pending ? "Saving…" : "Save"}
-        </button>
-        <Link href={viewHref} style={{ color: "var(--muted)", fontSize: 13 }}>
-          View my public profile →
-        </Link>
-        {state?.ok === true && (
-          <span style={{ color: "var(--green)", fontSize: 13 }}>Saved ✓</span>
-        )}
-        {state?.ok === false && (
-          <span style={{ color: "var(--red2)", fontSize: 13 }}>{state.error}</span>
-        )}
+      <div ref={wrapRef} className="t-input-wrap">
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <button ref={btnRef} type="submit" disabled={pending} className="t-input" style={btn}>
+            {pending ? "Saving…" : "Save"}
+          </button>
+          <Link href={viewHref} style={{ color: "var(--muted)", fontSize: 13 }}>
+            View my public profile →
+          </Link>
+          {state?.ok === true && (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--green)", fontSize: 13 }}>
+              <span className="t-success-check" data-state="in" aria-hidden="true" style={{ width: 18, height: 18 }}>
+                <svg viewBox="0 0 48 48" fill="none" width="18" height="18">
+                  <path
+                    d="M13 24 l7 7 l15 -16"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{ strokeDasharray: 33, strokeDashoffset: 33 }}
+                  />
+                </svg>
+              </span>
+              Saved
+            </span>
+          )}
+        </div>
+        <p className="t-error-msg" style={{ margin: "8px 0 0", color: "var(--red2)", fontSize: 13 }}>
+          {errorMsg}
+        </p>
       </div>
     </form>
   );

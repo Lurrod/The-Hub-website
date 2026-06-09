@@ -1,11 +1,11 @@
 /** Format a nullable number to fixed decimals, or an em dash when null. */
 export function fmt(n: number | null, digits = 2): string {
-  return n === null ? "—" : n.toFixed(digits);
+  return n === null ? "-" : n.toFixed(digits);
 }
 
 /** Format a nullable percentage (already 0-100) as "NN%", or em dash. */
 export function fmtPct(n: number | null): string {
-  return n === null ? "—" : `${Math.round(n)}%`;
+  return n === null ? "-" : `${Math.round(n)}%`;
 }
 
 /** Rating colour bucket mirroring the bot scoreboard thresholds. */

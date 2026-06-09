@@ -1,19 +1,35 @@
 @import "tailwindcss";
 
 :root {
-  --txt: #eaf2f8;
-  --muted: #9fb4c6;
-  --red: #ff4655;
-  --red2: #ff7a85;
-  --cyan: #3fe0d0;
-  --gold: #ffd166;
-  --green: #3fa2ff;
-  --yellow: #ffd166;
+  /* Render native controls (select popups, scrollbars, date pickers) dark,
+     so light option text isn't drawn on a default light popup. */
+  color-scheme: dark;
+  --txt: #eef4fa;
+  --muted: #a6bccd;
+
+  /* --red stays the VALORANT brand. The background image is a warm orange
+     glow, so the SECONDARY accents are tuned cool (teal / blue / violet /
+     emerald) to contrast and pop against it instead of muddying into it. */
+  --red: #ff4655;       /* brand + Pro queue */
+  --red2: #ff5c84;      /* loss / error - cleaned toward pink so it reads off orange */
+  --cyan: #2ee6d4;      /* teal accent + Semi Pro queue */
+  --blue: #4aa3ff;      /* cool accent + GC queue */
+  --violet: #a98bff;    /* cool accent + Open queue */
+  --green: #2fd08f;     /* win / positive ELO - emerald, complements the orange */
+  --gold: #ffcf4d;      /* ELO / score - kept gold but brighter */
+  --yellow: #ffc23d;    /* contested / warning */
+
   --glass: rgba(255, 255, 255, 0.06);
   --line: rgba(255, 255, 255, 0.14);
 }
 
 html, body { margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+/* anchored sections clear the sticky navbar instead of hiding under it */
+:target { scroll-margin-top: 96px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
 body {
   min-height: 100vh;
   color: var(--txt);
@@ -68,6 +84,118 @@ body {
 .slide-arrow:hover { color: #fff; border-color: var(--red); background: rgba(255, 255, 255, .10); }
 .slide-arrow svg { width: 16px; height: 16px; }
 
+/* Native dropdowns: the OS popup defaults to a light background, which makes
+   our light --txt option text unreadable. Force a dark popup site-wide. */
+select option,
+select optgroup {
+  background-color: #0c131c;
+  color: var(--txt);
+}
+
 .g { color: var(--green); }
 .y { color: var(--yellow); }
 .r { color: var(--red2); }
+
+/* ───────────────────────── transitions-dev ─────────────────────────
+   Semantic tokens + snippets for the transitions installed in this app:
+   success-check (MeForm save), error-state-shake (MeForm validation),
+   tabs-sliding (QueueTabs). Tokens are tuned for the site's dark glass theme. */
+:root {
+  /* Success check */
+  --check-opacity-dur: 550ms;
+  --check-rotate-dur: 550ms;
+  --check-rotate-from: 80deg;
+  --check-bob-dur: 450ms;
+  --check-y-amount: 40px;
+  --check-blur-dur: 500ms;
+  --check-blur-from: 10px;
+  --check-path-dur: 550ms;
+  --check-path-delay: 80ms;
+  --check-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --check-ease-opacity: cubic-bezier(0.22, 1, 0.36, 1);
+  --check-ease-rotate: cubic-bezier(0.22, 1, 0.36, 1);
+  --check-ease-bob: cubic-bezier(0.34, 1.35, 0.64, 1);
+  --check-ease-path: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Error state shake */
+  --shake-distance: 6px;
+  --shake-overshoot: 4px;
+  --shake-dur-a: 80ms;
+  --shake-dur-b: 60ms;
+  --shake-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --revert-hold: 3000ms;
+  --revert-dur: 280ms;
+  /* Tabs sliding - dark-theme tuned */
+  --tabs-dur: 200ms;
+  --tabs-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --tabs-text-muted: var(--muted);
+  --tabs-text-active: #fff;
+  --tabs-bar-bg: rgba(255, 255, 255, 0.05);
+  --tabs-pill-bg: linear-gradient(135deg, var(--red), #d8323f);
+}
+
+/* success-check (transitions-dev 10-success-check.md) */
+.t-success-check { display: inline-block; transform-origin: center; opacity: 0; will-change: transform, opacity, filter; }
+.t-success-check svg { display: block; overflow: visible; }
+.t-success-check svg path { stroke-dasharray: 20; stroke-dashoffset: 20; }
+.t-success-check[data-state="in"] {
+  animation:
+    t-check-fade   var(--check-opacity-dur) var(--check-ease-opacity) forwards,
+    t-check-rotate var(--check-rotate-dur)  var(--check-ease-rotate)  forwards,
+    t-check-blur   var(--check-blur-dur)    var(--check-ease-out)     forwards,
+    t-check-bob    var(--check-bob-dur)     var(--check-ease-bob)     forwards;
+}
+.t-success-check[data-state="in"] svg path {
+  animation: t-check-draw var(--check-path-dur) var(--check-ease-path) var(--check-path-delay, 0ms) forwards;
+}
+@keyframes t-check-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes t-check-rotate { from { transform: rotate(var(--check-rotate-from)); } to { transform: rotate(0deg); } }
+@keyframes t-check-blur { from { filter: blur(var(--check-blur-from)); } to { filter: blur(0); } }
+@keyframes t-check-bob { from { translate: 0 var(--check-y-amount); } to { translate: 0 0; } }
+@keyframes t-check-draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .t-success-check { animation: none !important; opacity: 1; }
+  .t-success-check svg path { animation: none !important; stroke-dashoffset: 0 !important; }
+}
+
+/* error-state-shake (transitions-dev 12-error-state-shake.md) */
+.t-input { transition: border-color 150ms ease-out; will-change: transform; }
+.t-input.is-error { transition: border-color var(--revert-dur, 280ms) ease-out; }
+.t-error-msg {
+  opacity: 0; visibility: hidden;
+  transition: opacity var(--revert-dur, 280ms) ease-out, visibility 0s linear var(--revert-dur, 280ms);
+}
+.t-input-wrap.is-error .t-error-msg {
+  opacity: 1; visibility: visible;
+  transition: opacity var(--revert-dur, 280ms) ease-out, visibility 0s linear 0s;
+}
+.t-input.is-shaking { animation: t-input-shake calc(var(--shake-dur-a) * 2 + var(--shake-dur-b) * 2) linear; }
+@keyframes t-input-shake {
+  0%      { transform: translateX(0);                                animation-timing-function: var(--shake-ease); }
+  28.57%  { transform: translateX(var(--shake-distance));            animation-timing-function: var(--shake-ease); }
+  57.14%  { transform: translateX(calc(var(--shake-distance) * -1)); animation-timing-function: var(--shake-ease); }
+  78.57%  { transform: translateX(var(--shake-overshoot));           animation-timing-function: var(--shake-ease); }
+  100%    { transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .t-input { animation: none !important; transform: none !important; }
+}
+
+/* tabs-sliding (transitions-dev 16-tabs-sliding.md) */
+.t-tabs { position: relative; display: inline-flex; align-items: center; gap: 3px; padding: 3px; border-radius: 48px; background: var(--tabs-bar-bg); }
+.t-tab {
+  position: relative; appearance: none; border: 0; background: transparent; height: 30px; padding: 4px 12px;
+  color: var(--tabs-text-muted); cursor: pointer; border-radius: 48px; z-index: 1;
+  transition: color var(--tabs-dur) var(--tabs-ease);
+}
+.t-tab:not([aria-selected="true"]):hover, .t-tab[aria-selected="true"] { color: var(--tabs-text-active); }
+.t-tabs-pill {
+  position: absolute; top: 3px; left: 0; height: 30px; width: 0; background: var(--tabs-pill-bg); border-radius: 48px;
+  transform: translateX(0);
+  transition: transform var(--tabs-dur) var(--tabs-ease), width var(--tabs-dur) var(--tabs-ease);
+  will-change: transform, width; z-index: 0; pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) { .t-tabs-pill, .t-tab { transition: none !important; } }
+/* project overrides: frame the bar + size pills to match the site's queue tabs */
+.t-tabs { border: 1px solid var(--line); font-family: inherit; }
+.t-tab { height: auto; padding: 9px 16px; font-size: 12px; font-weight: 700; font-family: inherit; }
+.t-tabs-pill { top: 3px; height: calc(100% - 6px); }

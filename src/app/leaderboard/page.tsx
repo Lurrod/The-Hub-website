@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getQueueStatLines } from "@/lib/db/players";
 import { rankLeaderboard } from "@/lib/stats/leaderboard";
@@ -10,6 +11,8 @@ export const revalidate = 60;
 function parseQueue(v: string | undefined): QueueType {
   return (QUEUE_TYPES as string[]).includes(v ?? "") ? (v as QueueType) : "pro";
 }
+
+export const metadata: Metadata = { title: "Leaderboard" };
 
 export default async function Home({
   searchParams,

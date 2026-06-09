@@ -7,6 +7,6 @@ export function initials(name: string): string {
 
 /** ELO delta as a signed string, or em dash. */
 export function fmtDelta(d: number | null): string {
-  if (d === null) return "—";
+  if (d === null) return "-";
   return d > 0 ? `+${d}` : `${d}`;
 }

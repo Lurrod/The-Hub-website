@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPlayerProfile } from "@/lib/db/profile";
 import { getPlayerMatchHistory } from "@/lib/db/matches";
@@ -10,6 +11,12 @@ export const dynamic = "force-dynamic";
 
 function eyebrow(text: string) {
   return <div style={{ textTransform: "uppercase", letterSpacing: 3, fontSize: 11, color: "var(--muted)", fontWeight: 700, margin: "22px 4px 12px" }}>{text}</div>;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const profile = await getPlayerProfile(id);
+  return { title: profile?.name ?? "Player" };
 }
 
 export default async function PlayerPage({ params }: { params: Promise<{ id: string }> }) {

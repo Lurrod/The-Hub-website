@@ -126,7 +126,7 @@ describe("getMatchDetail", () => {
   });
 });
 
-describe("getPlayerMatchHistory — absent score/elo_results", () => {
+describe("getPlayerMatchHistory - absent score/elo_results", () => {
   it("returns null eloDelta and null scoreLine when the parent match lacks them", async () => {
     const { getPlayerMatchHistory } = await import("./matches");
     const rows = await getPlayerMatchHistory("5", { limit: 10 });

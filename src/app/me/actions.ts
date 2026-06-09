@@ -16,7 +16,6 @@ export async function saveProfile(
   const parsed = profileSchema.safeParse({
     bio: formData.get("bio") ?? "",
     favorite_role: formData.get("favorite_role") ?? "",
-    favorite_agent: formData.get("favorite_agent") ?? "",
     twitch: formData.get("twitch") ?? "",
     twitter: formData.get("twitter") ?? "",
     youtube: formData.get("youtube") ?? "",
@@ -33,7 +32,6 @@ export async function saveProfile(
     {
       bio: d.bio,
       favorite_role: d.favorite_role,
-      favorite_agent: d.favorite_agent,
       socials: {
         twitch: d.twitch || undefined,
         twitter: d.twitter || undefined,

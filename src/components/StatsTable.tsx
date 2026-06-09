@@ -7,7 +7,7 @@ import { fmt, fmtPct, ratingClass } from "@/components/format";
 type Key = "name" | "games" | "rating" | "acs" | "adr" | "kd" | "kastPct" | "kpr" | "apr" | "fkpr" | "fdpr" | "hsPct" | "elo";
 
 /** Date is serialized to a string across the RSC boundary, so the client table
- * never receives `updatedAt` as a usable Date — exclude it from the prop. */
+ * never receives `updatedAt` as a usable Date - exclude it from the prop. */
 type StatRow = Omit<PlayerStatLine, "updatedAt">;
 
 const COLS: { key: Key; label: string; left?: boolean }[] = [

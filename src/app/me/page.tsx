@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
 import { auth, signIn } from "@/auth";
 import { getDb } from "@/lib/db/client";
 import type { WebProfile } from "@/lib/db/types";
 import MeForm from "@/components/MeForm";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "My Profile" };
 
 export default async function MePage() {
   const session = await auth();
@@ -11,7 +13,13 @@ export default async function MePage() {
     return (
       <div
         className="glass"
-        style={{ padding: 26, marginTop: 22, textAlign: "center" }}
+        style={{
+          padding: 26,
+          marginTop: 22,
+          textAlign: "center",
+          maxWidth: 680,
+          marginInline: "auto",
+        }}
       >
         <p style={{ color: "var(--muted)", marginTop: 0 }}>
           Sign in to edit your profile.
@@ -46,7 +54,7 @@ export default async function MePage() {
     .findOne({ _id: session.discordId });
 
   return (
-    <>
+    <div style={{ maxWidth: 680, marginInline: "auto" }}>
       <div
         style={{
           textTransform: "uppercase",
@@ -63,7 +71,6 @@ export default async function MePage() {
         initial={{
           bio: wp?.bio ?? "",
           favorite_role: wp?.favorite_role ?? "",
-          favorite_agent: wp?.favorite_agent ?? "",
           twitch: wp?.socials?.twitch ?? "",
           twitter: wp?.socials?.twitter ?? "",
           youtube: wp?.socials?.youtube ?? "",
@@ -72,6 +79,6 @@ export default async function MePage() {
         }}
         viewHref={`/player/${session.discordId}`}
       />
-    </>
+    </div>
   );
 }

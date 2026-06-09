@@ -53,7 +53,6 @@ export interface EloDoc {
 export interface WebProfile {
   _id: string;
   bio?: string;
-  favorite_agent?: string;
   favorite_role?: string;
   favorite_map?: string;
   socials?: { twitch?: string; twitter?: string; youtube?: string };

@@ -13,7 +13,7 @@ export default function SearchBox() {
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="🔍  Search player…"
+        placeholder="Search player…"
         style={{ background: "rgba(255,255,255,.05)", border: "1px solid var(--line)", borderRadius: 999, padding: "8px 16px", color: "var(--txt)", fontSize: 12, minWidth: 240 }}
       />
     </form>

@@ -16,7 +16,7 @@ function ratingColor(r: number): string {
 
 /** Centered signed delta: +N green / -N red / 0 grey / null em-dash. */
 function Delta({ value }: { value: number | null }) {
-  if (value === null) return <span style={{ color: MUTED }}>—</span>;
+  if (value === null) return <span style={{ color: MUTED }}>-</span>;
   if (value > 0) return <span style={{ color: GREEN }}>+{value}</span>;
   if (value < 0) return <span style={{ color: RED }}>{value}</span>;
   return <span style={{ color: MUTED }}>0</span>;
@@ -63,7 +63,7 @@ const COLS: { key: string; label: string }[] = [
 ];
 
 function pct(n: number | null): string {
-  return n === null ? "—" : `${Math.round(n)}%`;
+  return n === null ? "-" : `${Math.round(n)}%`;
 }
 
 function TeamBlock({ title, players, won }: { title: string; players: ScoreboardPlayer[]; won: boolean }) {
@@ -99,7 +99,7 @@ function TeamBlock({ title, players, won }: { title: string; players: Scoreboard
               <td style={TD}>{p.kills} / {p.deaths} / {p.assists}</td>
               <td style={TD}><Delta value={p.kills - p.deaths} /></td>
               <td style={TD}>{pct(p.kastPct)}</td>
-              <td style={TD}>{p.adr === null ? "—" : Math.round(p.adr)}</td>
+              <td style={TD}>{p.adr === null ? "-" : Math.round(p.adr)}</td>
               <td style={TD}>{pct(p.hsPct)}</td>
               <td style={TD}>{p.firstKills}</td>
               <td style={TD}>{p.firstDeaths}</td>

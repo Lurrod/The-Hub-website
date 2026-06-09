@@ -25,7 +25,7 @@ beforeAll(async () => {
     { _id: "1:open", user_id: "1", queue_type: "open", elo: 2000, wins: 6, losses: 4, name: "Alpha" },
   ] as unknown as Document[]);
   await db.collection("web_profiles").insertOne({
-    _id: "1", bio: "gg", favorite_agent: "Jett", socials: { twitch: "alpha" }, discord_avatar: "abc123",
+    _id: "1", bio: "gg", socials: { twitch: "alpha" }, discord_avatar: "abc123",
   } as unknown as Document);
 });
 
