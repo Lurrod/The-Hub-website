@@ -1,0 +1,162 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Un seul déploiement à la fois ; on ne coupe pas un déploiement en cours.
+concurrency:
+  group: deploy-the-hub-website
+  cancel-in-progress: false
+
+jobs:
+  # ═══════════════════════════════════════════════════════════
+  # CI — Lint + types
+  # ═══════════════════════════════════════════════════════════
+  quality:
+    name: Lint + types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+  # ═══════════════════════════════════════════════════════════
+  # CI — Tests (Vitest + mongodb-memory-server, pas de service externe)
+  # ═══════════════════════════════════════════════════════════
+  test:
+    name: Tests + coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run coverage
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
+  # ═══════════════════════════════════════════════════════════
+  # CI — Build de production (attrape les erreurs de build avant déploiement)
+  # Valeurs factices : la connexion Mongo est paresseuse (src/lib/db/client.ts),
+  # donc `next build` ne se connecte pas à la DB.
+  # ═══════════════════════════════════════════════════════════
+  build:
+    name: Next build
+    runs-on: ubuntu-latest
+    env:
+      MONGO_URL: mongodb://localhost:27017
+      AUTH_SECRET: ci-build-placeholder-secret-not-used-at-runtime
+      AUTH_URL: http://localhost:3000
+      NEXT_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  # ═══════════════════════════════════════════════════════════
+  # CD — Déploiement sur Kimsufi (uniquement push sur main)
+  # Le serveur fait git fetch + reset --hard + npm ci + build + pm2.
+  # Le fichier .env (gitignored) du serveur n'est PAS touché par le reset.
+  # ═══════════════════════════════════════════════════════════
+  deploy:
+    needs: [quality, test, build]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          script: |
+            set -e
+            cd /var/www/the-hub-website
+
+            # Sauvegarde des modifs locales éventuelles (édition à la main sur le serveur)
+            # pour éviter "would be overwritten by merge". Récupérables via `git stash list`.
+            if ! git diff --quiet || ! git diff --cached --quiet; then
+              echo "Modifs locales détectées, stash automatique"
+              git stash push -u -m "auto-stash deploy $(date +%Y-%m-%d_%H:%M:%S)"
+            fi
+
+            # Mise à jour stricte sur origin/main
+            git fetch origin main
+            git reset --hard origin/main
+            echo "Commit déployé : $(git rev-parse --short HEAD)"
+
+            # Charger nvm/node si présent (selon l'installation du serveur)
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+            # Dépendances + build de production
+            npm ci
+            npm run build
+
+            # Démarrage / redémarrage via PM2.
+            # startOrRestart relit ecosystem.config.cjs (script, cwd, env) à chaque déploiement.
+            pm2 startOrRestart ecosystem.config.cjs --update-env
+            pm2 save
+
+            echo "Déploiement terminé"
+
+      # ─── Smoke test post-déploiement (skip tant que SITE_URL n'est pas défini) ───
+      - name: Smoke test — page d'accueil
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          if [ -z "$SITE_URL" ]; then
+            echo "SITE_URL non défini — smoke test ignoré"
+            exit 0
+          fi
+          sleep 5
+          for i in 1 2 3; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL/" || echo "000")
+            echo "Tentative $i — GET $SITE_URL/ → HTTP $HTTP_CODE"
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "Page d'accueil OK"
+              exit 0
+            fi
+            [ $i -lt 3 ] && sleep 5
+          done
+          echo "Page d'accueil KO après 3 tentatives"
+          exit 1

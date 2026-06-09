@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { saveProfile, type SaveResult } from "@/app/me/actions";
 import { ROLES } from "@/lib/profile/schema";
@@ -71,14 +71,14 @@ export default function MeForm({
   // server action returns a validation error, then auto-revert on a hold timer.
   const wrapRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
-  const [errorMsg, setErrorMsg] = useState("");
+  // Dérivé du résultat de l'action serveur — pas de setState dans l'effect.
+  const errorMsg = state && state.ok === false ? state.error : "";
 
   useEffect(() => {
     if (!state) return;
     const wrap = wrapRef.current;
     const btn = btnRef.current;
     if (state.ok === false) {
-      setErrorMsg(state.error);
       if (!wrap || !btn) return;
       wrap.classList.add("is-error");
       btn.classList.remove("is-shaking");
