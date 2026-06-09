@@ -33,13 +33,13 @@ function Square({ won, color, end }: { won: boolean; color: string; end: string 
       }}
     >
       {icon && (
-        // The source PNGs are near-white, which vanishes on the bright won
-        // squares. Recolour them to a dark tint via mask for strong contrast.
+        // Recoloured via mask so the icon stays a clean solid white on the
+        // coloured won squares.
         <span
           aria-hidden
           style={{
             width: 13, height: 13,
-            backgroundColor: "#0b1119",
+            backgroundColor: "#ffffff",
             WebkitMaskImage: `url("${icon}")`,
             maskImage: `url("${icon}")`,
             WebkitMaskSize: "contain", maskSize: "contain",
