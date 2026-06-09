@@ -8,6 +8,7 @@ export default function SearchBox() {
   return (
     <form
       onSubmit={(e) => { e.preventDefault(); const v = q.trim(); if (v) router.push(`/search?q=${encodeURIComponent(v)}`); }}
+      className="nav-search"
       style={{ display: "flex" }}
     >
       <input

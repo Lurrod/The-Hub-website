@@ -50,10 +50,10 @@ export default function ProfileHeader({ profile }: { profile: PlayerProfile }) {
   if (wp?.tracker_url) socials.push({ kind: "tracker", label: "Tracker.gg", url: wp.tracker_url });
 
   return (
-    <div className="glass" style={{ display: "flex", gap: 22, alignItems: "center", padding: 26, marginBottom: 16 }}>
+    <div className="glass profile-head" style={{ display: "flex", gap: 22, alignItems: "center", padding: 26, marginBottom: 16 }}>
       <Avatar name={profile.name} size={92} src={profile.avatarUrl} />
       <div style={{ flex: 1 }}>
-        <div className="teko" style={{ fontFamily: "var(--font-teko)", fontSize: 44, fontWeight: 700, lineHeight: 1 }}>
+        <div className="teko profile-name" style={{ fontFamily: "var(--font-teko)", fontSize: 44, fontWeight: 700, lineHeight: 1 }}>
           {profile.name}
         </div>
         {wp?.favorite_role && (
@@ -76,7 +76,7 @@ export default function ProfileHeader({ profile }: { profile: PlayerProfile }) {
         )}
       </div>
       {top && (
-        <div style={{ textAlign: "center", paddingLeft: 22, borderLeft: "1px solid var(--line)" }}>
+        <div className="profile-side" style={{ textAlign: "center", paddingLeft: 22, borderLeft: "1px solid var(--line)" }}>
           <div className="teko" style={{ fontFamily: "var(--font-teko)", fontSize: 52, fontWeight: 700, color: "var(--gold)", lineHeight: 1 }}>{top.elo}</div>
           <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: "var(--muted)", fontWeight: 700 }}>{QUEUE_LABELS[top.queueType]} ELO</div>
         </div>

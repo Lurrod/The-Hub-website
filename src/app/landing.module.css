@@ -499,4 +499,6 @@
 @media (max-width: 520px) {
   .lname { font-size: 28px; }
   .title { font-size: clamp(46px, 14vw, 70px); }
+  .shead { gap: 12px; }
+  .shead h2 { font-size: 24px; }
 }

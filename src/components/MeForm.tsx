@@ -131,7 +131,7 @@ export default function MeForm({
         </select>
       </Field>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+      <div className="two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         <Field label="Twitch (handle)">
           <input name="twitch" defaultValue={initial.twitch} style={input} />
         </Field>

@@ -98,3 +98,15 @@
 .foot a:hover {
   color: var(--txt);
 }
+
+/* mobile-only: desktop rendering unchanged */
+@media (max-width: 640px) {
+  .doc {
+    margin: 16px auto;
+    padding: 24px 18px 22px;
+  }
+
+  .head h1 {
+    font-size: 32px;
+  }
+}

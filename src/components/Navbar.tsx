@@ -6,7 +6,7 @@ import Avatar from "./Avatar";
 export default async function Navbar() {
   const session = await auth();
   return (
-    <nav className="glass" style={{
+    <nav className="glass site-nav" style={{
       position: "sticky", top: 14, zIndex: 5, display: "flex", alignItems: "center",
       gap: 18, margin: "14px auto 0", maxWidth: 1100, padding: "12px 22px", borderRadius: 16,
     }}>
@@ -14,7 +14,7 @@ export default async function Navbar() {
         <span aria-hidden style={{ width: 42, height: 42, display: "block", backgroundImage: 'url("/fl_logo.png")', backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundPosition: "center" }} />
       </Link>
       <SearchBox />
-      <div style={{ marginLeft: "auto", display: "flex", gap: 22, fontWeight: 600, fontSize: 13, color: "var(--muted)" }}>
+      <div className="nav-links" style={{ marginLeft: "auto", display: "flex", gap: 22, fontWeight: 600, fontSize: 13, color: "var(--muted)" }}>
         <Link href="/leaderboard" style={{ color: "inherit", textDecoration: "none" }}>Leaderboards</Link>
         <Link href="/stats" style={{ color: "inherit", textDecoration: "none" }}>Stats</Link>
         <Link href="/matches" style={{ color: "inherit", textDecoration: "none" }}>Matches</Link>

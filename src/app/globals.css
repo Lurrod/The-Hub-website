@@ -199,3 +199,74 @@ select optgroup {
 .t-tabs { border: 1px solid var(--line); font-family: inherit; }
 .t-tab { height: auto; padding: 9px 16px; font-size: 12px; font-weight: 700; font-family: inherit; }
 .t-tabs-pill { top: 3px; height: calc(100% - 6px); }
+
+/* ───────────────────────── RESPONSIVE (mobile-only) ─────────────────────────
+   Every rule below lives under a max-width media query so rendering at
+   desktop widths is unchanged. !important is only used where it must beat
+   an inline style that defines the desktop look. */
+@media (max-width: 860px) {
+  /* taller wrapped navbar: anchored sections still clear it */
+  :target { scroll-margin-top: 150px; }
+
+  /* wide data tables scroll horizontally instead of clipping */
+  .glass:has(> table) {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .glass:has(> table) > table {
+    min-width: max-content;
+    table-layout: auto !important; /* fixed 220px name col would starve stat cols */
+  }
+
+  /* matches carousel: margin arrows have no room offscreen, touch scroll instead */
+  .slide-arrow { display: none !important; }
+
+  /* navbar wraps; the search drops to its own full-width row */
+  nav.site-nav {
+    flex-wrap: wrap;
+    gap: 12px !important;
+    top: 8px !important;
+    margin: 10px 10px 0 !important;
+    padding: 10px 16px !important;
+  }
+  nav.site-nav .nav-search { flex: 1 1 100%; order: 10; }
+  nav.site-nav .nav-search input { min-width: 0 !important; width: 100%; }
+  nav.site-nav .nav-links { gap: 14px !important; }
+
+  /* match header band: tighter type so TEAM A · map · TEAM B fits */
+  .match-head { padding: 14px 14px !important; }
+  .match-head .mh-side { gap: 10px !important; }
+  .match-head .mh-team { font-size: 17px !important; }
+  .match-head .mh-score { font-size: 32px !important; }
+  .match-head .mh-mid { padding: 0 12px !important; }
+  .match-head .mh-map { font-size: 19px !important; }
+
+  /* profile header: ELO block drops below the identity instead of squeezing it */
+  .profile-head { flex-wrap: wrap; }
+  .profile-head .profile-side {
+    flex: 1 1 100%;
+    border-left: none !important;
+    padding-left: 0 !important;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+  }
+}
+
+@media (max-width: 560px) {
+  .site-main { padding: 16px !important; }
+
+  /* navbar: links get their own row under the logo / account controls */
+  nav.site-nav .nav-links {
+    order: 9;
+    flex: 1 1 100%;
+    margin-left: 0 !important;
+    flex-wrap: wrap;
+  }
+  nav.site-nav > :last-child { margin-left: auto; }
+
+  .profile-head { padding: 18px !important; gap: 16px !important; }
+  .profile-head .profile-name { font-size: 32px !important; }
+
+  /* /me editor: side-by-side handle fields stack */
+  .two-col { grid-template-columns: 1fr !important; }
+}

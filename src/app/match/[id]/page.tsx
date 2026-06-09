@@ -29,18 +29,18 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
   return (
     <>
       {/* Header band - mirrors the bot scoreboard header (team · score · map · score · team). */}
-      <div className="glass" style={{ display: "flex", alignItems: "center", padding: "18px 26px", marginBottom: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 16, flex: 1 }}>
-          <span style={{ ...teko(26), color: colorA, letterSpacing: 1 }}>TEAM A</span>
-          {d.scoreA !== null && <span style={{ ...teko(50), color: colorA }}>{d.scoreA}</span>}
+      <div className="glass match-head" style={{ display: "flex", alignItems: "center", padding: "18px 26px", marginBottom: 16 }}>
+        <div className="mh-side" style={{ display: "flex", alignItems: "center", gap: 16, flex: 1 }}>
+          <span className="mh-team" style={{ ...teko(26), color: colorA, letterSpacing: 1 }}>TEAM A</span>
+          {d.scoreA !== null && <span className="mh-score" style={{ ...teko(50), color: colorA }}>{d.scoreA}</span>}
         </div>
-        <div style={{ textAlign: "center", flex: "0 0 auto", padding: "0 24px" }}>
-          <div style={teko(26)}>{d.map}</div>
+        <div className="mh-mid" style={{ textAlign: "center", flex: "0 0 auto", padding: "0 24px" }}>
+          <div className="mh-map" style={teko(26)}>{d.map}</div>
           <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: "var(--muted)", fontWeight: 700, marginTop: 4 }}>{subtitle}</div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 16, flex: 1 }}>
-          {d.scoreB !== null && <span style={{ ...teko(50), color: colorB }}>{d.scoreB}</span>}
-          <span style={{ ...teko(26), color: colorB, letterSpacing: 1 }}>TEAM B</span>
+        <div className="mh-side" style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 16, flex: 1 }}>
+          {d.scoreB !== null && <span className="mh-score" style={{ ...teko(50), color: colorB }}>{d.scoreB}</span>}
+          <span className="mh-team" style={{ ...teko(26), color: colorB, letterSpacing: 1 }}>TEAM B</span>
         </div>
       </div>
       <RoundBar rounds={d.rounds} winner={d.winner} />

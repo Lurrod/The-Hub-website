@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${inter.variable} ${teko.variable} ${mono.variable}`}>
         <div className="grain" />
         <Navbar />
-        <main style={{ maxWidth: 1100, margin: "0 auto", padding: 24, minHeight: "60vh" }}>{children}</main>
+        <main className="site-main" style={{ maxWidth: 1100, margin: "0 auto", padding: 24, minHeight: "60vh" }}>{children}</main>
         <Footer />
       </body>
     </html>
