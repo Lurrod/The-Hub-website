@@ -239,7 +239,7 @@ await db.collection("web_profiles").insertMany([
   {
     _id: "100",
     bio: "Duelist main, occasional IGL. Entry or nothing. Catch me live on Twitch most evenings.",
-    favorite_agent: "Jett", favorite_role: "Duelist", favorite_map: "Ascent",
+    favorite_agent: "Jett", favorite_role: "Duelist", favorite_map: "Ascent", nationality: "FR",
     socials: { twitch: "zephyr", twitter: "zephyrvalo", youtube: "https://youtube.com/@zephyr" },
     vlr_url: "https://vlr.gg/player/12345/zephyr",
     tracker_url: "https://tracker.gg/valorant/profile/riot/Zephyr%23EUW/overview",
@@ -247,7 +247,7 @@ await db.collection("web_profiles").insertMany([
   {
     _id: "101",
     bio: "Sentinel diff. Lurk specialist.",
-    favorite_agent: "Killjoy", favorite_role: "Sentinel",
+    favorite_agent: "Killjoy", favorite_role: "Sentinel", nationality: "JP",
     socials: { twitter: "ka_valo" },
     tracker_url: "https://tracker.gg/valorant/profile/riot/Ka%231234/overview",
   },

@@ -3,6 +3,7 @@ import { getDb } from "./client";
 export interface WebProfileWrite {
   bio: string;
   favorite_role: string;
+  nationality: string;
   socials: { twitch?: string; twitter?: string; youtube?: string };
   vlr_url: string;
   tracker_url: string;
@@ -26,6 +27,7 @@ export async function updateWebProfile(
       $set: {
         bio: data.bio,
         favorite_role: data.favorite_role,
+        nationality: data.nationality,
         socials: data.socials,
         vlr_url: data.vlr_url,
         tracker_url: data.tracker_url,

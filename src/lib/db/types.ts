@@ -59,6 +59,8 @@ export interface WebProfile {
   bio?: string;
   favorite_role?: string;
   favorite_map?: string;
+  /** ISO 3166-1 alpha-2 country code (e.g. "FR"), or absent/"" if unset. */
+  nationality?: string;
   socials?: { twitch?: string; twitter?: string; youtube?: string };
   vlr_url?: string;
   tracker_url?: string;

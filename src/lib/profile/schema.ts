@@ -1,6 +1,12 @@
 import { z } from "zod";
+import { isCountryCode } from "./countries";
 
 export const ROLES = ["Duelist", "Initiator", "Controller", "Sentinel"] as const;
+
+const nationality = z
+  .string()
+  .trim()
+  .refine((v) => v === "" || isCountryCode(v), { message: "unknown country" });
 
 const handle = z
   .string()
@@ -32,6 +38,7 @@ function urlOnDomain(domains: string[]) {
 export const profileSchema = z.object({
   bio: z.string().trim().max(280).optional().default(""),
   favorite_role: z.enum(ROLES).or(z.literal("")).optional().default(""),
+  nationality: nationality.optional().default(""),
   twitch: handle.optional().default(""),
   twitter: handle.optional().default(""),
   youtube: urlOnDomain(["youtube.com", "youtu.be"]).optional().default(""),

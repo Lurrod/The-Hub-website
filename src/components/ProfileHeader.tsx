@@ -1,6 +1,7 @@
 import Avatar from "./Avatar";
 import type { PlayerProfile } from "@/lib/db/profile";
 import { QUEUE_LABELS } from "@/lib/db/types";
+import { countryName, flagEmoji } from "@/lib/profile/countries";
 
 type SocialKind = "twitch" | "twitter" | "youtube" | "vlr" | "tracker";
 
@@ -56,12 +57,20 @@ export default function ProfileHeader({ profile }: { profile: PlayerProfile }) {
         <div className="teko profile-name" style={{ fontFamily: "var(--font-teko)", fontSize: 44, fontWeight: 700, lineHeight: 1 }}>
           {profile.name}
         </div>
-        {wp?.favorite_role && (
+        {(wp?.favorite_role || (wp?.nationality && countryName(wp.nationality))) && (
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "10px 0" }}>
-            <span style={{ ...chip, display: "inline-flex", alignItems: "center", gap: 6 }}>
-              <span aria-hidden style={{ width: 16, height: 16, display: "block", backgroundImage: `url("/roles/${wp.favorite_role.toLowerCase()}.png")`, backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundPosition: "center" }} />
-              {wp.favorite_role}
-            </span>
+            {wp?.favorite_role && (
+              <span style={{ ...chip, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <span aria-hidden style={{ width: 16, height: 16, display: "block", backgroundImage: `url("/roles/${wp.favorite_role.toLowerCase()}.png")`, backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundPosition: "center" }} />
+                {wp.favorite_role}
+              </span>
+            )}
+            {wp?.nationality && countryName(wp.nationality) && (
+              <span style={{ ...chip, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <span aria-hidden style={{ fontSize: 15, lineHeight: 1 }}>{flagEmoji(wp.nationality)}</span>
+                {countryName(wp.nationality)}
+              </span>
+            )}
           </div>
         )}
         {wp?.bio && <p style={{ color: "var(--muted)", margin: "0 0 8px", maxWidth: 640 }}>{wp.bio}</p>}

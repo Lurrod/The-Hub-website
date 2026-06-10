@@ -3,10 +3,12 @@ import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { saveProfile, type SaveResult } from "@/app/me/actions";
 import { ROLES } from "@/lib/profile/schema";
+import { COUNTRIES, flagEmoji } from "@/lib/profile/countries";
 
 interface Initial {
   bio: string;
   favorite_role: string;
+  nationality: string;
   twitch: string;
   twitter: string;
   youtube: string;
@@ -120,16 +122,29 @@ export default function MeForm({
         />
       </Field>
 
-      <Field label="Favorite role">
-        <select name="favorite_role" defaultValue={initial.favorite_role} style={input}>
-          <option value="">-</option>
-          {ROLES.map((r) => (
-            <option key={r} value={r}>
-              {r}
-            </option>
-          ))}
-        </select>
-      </Field>
+      <div className="two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <Field label="Favorite role">
+          <select name="favorite_role" defaultValue={initial.favorite_role} style={input}>
+            <option value="">-</option>
+            {ROLES.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </select>
+        </Field>
+
+        <Field label="Nationality">
+          <select name="nationality" defaultValue={initial.nationality} style={input}>
+            <option value="">-</option>
+            {COUNTRIES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {flagEmoji(c.code)} {c.name}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </div>
 
       <div className="two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         <Field label="Twitch (handle)">

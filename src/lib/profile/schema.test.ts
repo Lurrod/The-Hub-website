@@ -4,6 +4,7 @@ import { profileSchema, ROLES } from "./schema";
 const ok = {
   bio: "gg wp",
   favorite_role: "Duelist",
+  nationality: "FR",
   twitch: "zephyr",
   twitter: "zephyr",
   youtube: "https://youtube.com/@zephyr",
@@ -21,6 +22,10 @@ describe("profileSchema", () => {
   it("rejects an unknown role", () => {
     expect(profileSchema.safeParse({ ...ok, favorite_role: "Flex" }).success).toBe(false);
   });
+  it("accepts a known nationality and rejects an unknown one", () => {
+    expect(profileSchema.safeParse({ ...ok, nationality: "JP" }).success).toBe(true);
+    expect(profileSchema.safeParse({ ...ok, nationality: "ZZ" }).success).toBe(false);
+  });
   it("rejects off-domain vlr_url / tracker_url", () => {
     expect(profileSchema.safeParse({ ...ok, vlr_url: "https://evil.com" }).success).toBe(false);
     expect(profileSchema.safeParse({ ...ok, tracker_url: "https://evil.com" }).success).toBe(false);
@@ -29,7 +34,7 @@ describe("profileSchema", () => {
     expect(profileSchema.safeParse({ ...ok, youtube: "https://evil.com" }).success).toBe(false);
   });
   it("allows all-empty optional fields", () => {
-    expect(profileSchema.safeParse({ favorite_role: "", bio: "", twitch: "", twitter: "", youtube: "", vlr_url: "", tracker_url: "" }).success).toBe(true);
+    expect(profileSchema.safeParse({ favorite_role: "", nationality: "", bio: "", twitch: "", twitter: "", youtube: "", vlr_url: "", tracker_url: "" }).success).toBe(true);
   });
   it("exposes the four roles", () => {
     expect(ROLES).toEqual(["Duelist", "Initiator", "Controller", "Sentinel"]);
