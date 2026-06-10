@@ -4,7 +4,10 @@ import { searchPlayers } from "@/lib/db/search";
 import Avatar from "@/components/Avatar";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Search" };
+export const metadata: Metadata = {
+  title: "Search",
+  description: "Find a player by name across the Fast Learner x The Hub ladders.",
+};
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const q = ((await searchParams).q ?? "").trim();

@@ -5,7 +5,10 @@ import QueueTabs from "@/components/QueueTabs";
 import StatsTable from "@/components/StatsTable";
 
 export const revalidate = 60;
-export const metadata: Metadata = { title: "Stats" };
+export const metadata: Metadata = {
+  title: "Stats",
+  description: "Sortable player statistics — Rating, ACS, ADR, K/D, KAST and more across every ranked queue.",
+};
 
 function parseQueue(v: string | undefined): QueueType {
   return (QUEUE_TYPES as string[]).includes(v ?? "") ? (v as QueueType) : "pro";

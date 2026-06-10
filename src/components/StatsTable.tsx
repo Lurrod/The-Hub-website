@@ -69,13 +69,33 @@ export default function StatsTable({ lines }: { lines: StatRow[] }) {
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
             <tr>
-              {COLS.map((c) => (
-                <th key={c.key} onClick={() => setSortKey(c.key)} style={{
-                  textAlign: c.left ? "left" : "right", padding: "13px 12px", cursor: "pointer",
-                  color: sortKey === c.key ? "#fff" : "var(--muted)", fontSize: 11,
-                  textTransform: "uppercase", letterSpacing: .5, fontWeight: 800, whiteSpace: "nowrap",
-                }}>{c.label}{sortKey === c.key ? " ▼" : ""}</th>
-              ))}
+              {COLS.map((c) => {
+                const active = sortKey === c.key;
+                return (
+                  <th
+                    key={c.key}
+                    scope="col"
+                    // Only the active column carries aria-sort (APG: omit on the
+                    // rest to avoid screen readers announcing "none" everywhere).
+                    // The left-aligned text column (name) sorts A->Z; the rest desc.
+                    aria-sort={active ? (c.left ? "ascending" : "descending") : undefined}
+                    style={{ textAlign: c.left ? "left" : "right", padding: 0, whiteSpace: "nowrap" }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setSortKey(c.key)}
+                      style={{
+                        width: "100%", background: "none", border: "none", cursor: "pointer",
+                        font: "inherit", textAlign: c.left ? "left" : "right", padding: "13px 12px",
+                        color: active ? "#fff" : "var(--muted)", fontSize: 11,
+                        textTransform: "uppercase", letterSpacing: .5, fontWeight: 800, whiteSpace: "nowrap",
+                      }}
+                    >
+                      {c.label}{active ? " ▼" : ""}
+                    </button>
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>

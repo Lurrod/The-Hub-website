@@ -12,7 +12,10 @@ function parseQueue(v: string | undefined): QueueType {
   return (QUEUE_TYPES as string[]).includes(v ?? "") ? (v as QueueType) : "pro";
 }
 
-export const metadata: Metadata = { title: "Leaderboard" };
+export const metadata: Metadata = {
+  title: "Leaderboard",
+  description: "Per-queue ELO rankings for the Fast Learner x The Hub community — Pro, Semi Pro, Open and GC ladders.",
+};
 
 export default async function Home({
   searchParams,

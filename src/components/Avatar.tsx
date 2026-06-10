@@ -4,6 +4,7 @@ export default function Avatar({ name, size = 36, src }: { name: string; size?: 
   if (src) {
     return (
       <span
+        role="img"
         aria-label={name}
         style={{
           width: size, height: size, borderRadius: "50%", flex: "0 0 auto", display: "block",

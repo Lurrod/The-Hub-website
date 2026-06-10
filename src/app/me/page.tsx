@@ -5,7 +5,10 @@ import type { WebProfile } from "@/lib/db/types";
 import MeForm from "@/components/MeForm";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "My Profile" };
+export const metadata: Metadata = {
+  title: "My Profile",
+  description: "Edit your public profile — bio, favorite role, nationality and social links.",
+};
 
 export default async function MePage() {
   const session = await auth();

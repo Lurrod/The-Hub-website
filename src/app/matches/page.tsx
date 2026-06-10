@@ -6,7 +6,10 @@ import { relativeTime } from "@/lib/stats/match-line";
 import QueueMatches from "@/components/QueueMatches";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Matches" };
+export const metadata: Metadata = {
+  title: "Matches",
+  description: "Recent validated custom matches with scoreboards, maps and per-round breakdowns.",
+};
 
 function TeamLines({ players, align }: { players: OngoingTeamPlayer[]; align: "left" | "right" }) {
   if (players.length === 0) return <span style={{ color: "var(--muted)" }}>-</span>;
