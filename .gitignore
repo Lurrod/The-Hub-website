@@ -25,3 +25,7 @@ AGENTS.md
 .claude/
 .superpowers/
 docs/superpowers/
+.agents/skills/transitions-dev/
+
+# Audit artifacts (kept locally, not in the repo)
+audit-output/
