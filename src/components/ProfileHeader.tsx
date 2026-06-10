@@ -62,14 +62,14 @@ export default function ProfileHeader({ profile }: { profile: PlayerProfile }) {
               <span
                 title={countryName(wp.nationality)}
                 aria-label={countryName(wp.nationality)}
-                style={{ ...chip, display: "inline-flex", alignItems: "center", padding: "6px 12px" }}
+                style={{ display: "inline-flex", alignItems: "center" }}
               >
                 <Image
                   src={flagUrl(wp.nationality)}
                   alt=""
                   aria-hidden
-                  width={24}
-                  height={18}
+                  width={26}
+                  height={20}
                   style={{
                     display: "block",
                     borderRadius: 3,

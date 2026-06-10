@@ -63,10 +63,10 @@ body {
 
 .social {
   width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
-  background: rgba(255, 255, 255, .06); border: 1px solid var(--line);
-  color: var(--muted); text-decoration: none; transition: .15s;
+  color: var(--muted); text-decoration: none;
+  transition: transform .15s ease, color .15s ease;
 }
-.social:hover { color: #fff; border-color: var(--red); box-shadow: 0 0 14px #ff465544; }
+.social:hover { color: #fff; transform: translateY(-3px); }
 
 .noscrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 .noscrollbar::-webkit-scrollbar { display: none; }
