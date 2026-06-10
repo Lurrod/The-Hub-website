@@ -56,12 +56,17 @@ beforeAll(async () => {
     agg("2:pro", { rating_2_0_sum: 9, games: 12 }),
     agg("3:pro", { games: 3, rating_2_0_sum: 4 }),
     agg("4:semipro", { queue_type: "semipro", _id: "4:semipro" }),
+    // 5:pro has no matching elo doc -> skipped by the join
+    agg("5:pro", { _id: "5:pro" }),
+    // 6:pro played 0 games -> rating is null -> sorted last
+    agg("6:pro", { _id: "6:pro", games: 0, rating_2_0_sum: 0 }),
   ] as unknown as Document[]);
   await db.collection("elo").insertMany([
     elo("1:pro", { elo: 2300, name: "Alpha" }),
     elo("2:pro", { elo: 2100, name: "Bravo" }),
     elo("3:pro", { elo: 1900, name: "Charlie" }),
     elo("4:semipro", { queue_type: "semipro", _id: "4:semipro", name: "Delta" }),
+    elo("6:pro", { _id: "6:pro", elo: 1500, name: "Zero" }),
   ] as unknown as Document[]);
 });
 
@@ -89,5 +94,15 @@ describe("getQueueStatLines", () => {
     const { getQueueStatLines } = await import("./players");
     const lines = await getQueueStatLines("gc", { minGames: 0 });
     expect(lines).toEqual([]);
+  });
+
+  it("defaults minGames to 0, skips players without an elo doc, and sorts null ratings last", async () => {
+    const { getQueueStatLines } = await import("./players");
+    const lines = await getQueueStatLines("pro"); // no opts -> minGames defaults to 0
+    const names = lines.map((l) => l.name);
+    expect(names).not.toContain("P5"); // 5:pro has no elo doc
+    const last = lines[lines.length - 1];
+    expect(last.name).toBe("Zero"); // 0 games -> null rating sorts last
+    expect(last.rating).toBeNull();
   });
 });
