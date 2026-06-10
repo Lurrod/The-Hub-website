@@ -66,9 +66,12 @@ export default function ProfileHeader({ profile }: { profile: PlayerProfile }) {
               </span>
             )}
             {wp?.nationality && countryName(wp.nationality) && (
-              <span style={{ ...chip, display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <span aria-hidden style={{ fontSize: 15, lineHeight: 1 }}>{flagEmoji(wp.nationality)}</span>
-                {countryName(wp.nationality)}
+              <span
+                title={countryName(wp.nationality)}
+                aria-label={countryName(wp.nationality)}
+                style={{ ...chip, display: "inline-flex", alignItems: "center", padding: "6px 12px", fontSize: 18, lineHeight: 1 }}
+              >
+                <span aria-hidden>{flagEmoji(wp.nationality)}</span>
               </span>
             )}
           </div>
