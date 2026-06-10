@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 const UPDATED = "June 9, 2026";
-const CONTACT = "borde.titouan.47@gmail.com";
+const CONTACT_DISCORD = "https://discord.com/invite/aSZNHuhJg5";
 
 export default function PrivacyPage() {
   return (
@@ -80,9 +80,12 @@ export default function PrivacyPage() {
       <p>
         Under the GDPR you have the right to access, rectify, erase, restrict, and
         port your personal data, and to object to its processing. To exercise any
-        of these rights, contact us at{" "}
-        <a href={`mailto:${CONTACT}`}>{CONTACT}</a>. You also have the right to
-        lodge a complaint with your local data protection authority.
+        of these rights, contact us on{" "}
+        <a href={CONTACT_DISCORD} target="_blank" rel="noreferrer">
+          our Discord server
+        </a>
+        . You also have the right to lodge a complaint with your local data
+        protection authority.
       </p>
 
       <h2>Children</h2>
@@ -100,8 +103,11 @@ export default function PrivacyPage() {
 
       <h2>Contact</h2>
       <p>
-        For any privacy question, email{" "}
-        <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
+        For any privacy question, reach us on{" "}
+        <a href={CONTACT_DISCORD} target="_blank" rel="noreferrer">
+          our Discord server
+        </a>
+        .
       </p>
     </LegalPage>
   );

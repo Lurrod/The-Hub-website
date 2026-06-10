@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 const LEGAL: { href: string; label: string }[] = [
   { href: "/legal/privacy", label: "Privacy" },
@@ -34,17 +35,12 @@ export default function Footer() {
           aria-label="The Hub - home"
           style={{ display: "flex", alignItems: "center", flex: "0 0 auto" }}
         >
-          <span
-            aria-hidden
-            style={{
-              width: 30,
-              height: 30,
-              display: "block",
-              backgroundImage: 'url("/fl_logo.png")',
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-            }}
+          <Image
+            src="/fl_logo.png"
+            alt="The Hub logo"
+            width={30}
+            height={30}
+            style={{ display: "block", objectFit: "contain" }}
           />
         </Link>
 

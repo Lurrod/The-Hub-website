@@ -1,5 +1,8 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import s from "./landing.module.css";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 const DISCORD_INVITE = "https://discord.com/invite/aSZNHuhJg5";
 

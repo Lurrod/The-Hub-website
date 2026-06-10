@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 const UPDATED = "June 9, 2026";
-const CONTACT = "borde.titouan.47@gmail.com";
+const CONTACT_DISCORD = "https://discord.com/invite/aSZNHuhJg5";
 
 export default function NoticePage() {
   return (
@@ -20,16 +20,25 @@ export default function NoticePage() {
 
       <h2>Publisher</h2>
       <p>
-        The Platform is published by <strong>Fast Learner × The Hub</strong>, an
-        amateur community project.
+        The Platform is published by <strong>Titouan Borde</strong> under the
+        name <strong>Fast Learner × The Hub</strong>, an amateur community
+        project.
         <br />
-        Contact: <a href={`mailto:${CONTACT}`}>{CONTACT}</a>
+        Contact:{" "}
+        <a href={CONTACT_DISCORD} target="_blank" rel="noreferrer">
+          our Discord server
+        </a>
+        .
       </p>
 
       <h2>Publication director</h2>
       <p>
-        The director of publication is the operator of Fast Learner × The Hub,
-        reachable at <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
+        The director of publication is <strong>Titouan Borde</strong>, reachable
+        on{" "}
+        <a href={CONTACT_DISCORD} target="_blank" rel="noreferrer">
+          our Discord server
+        </a>
+        .
       </p>
 
       <h2>Hosting</h2>
@@ -68,8 +77,11 @@ export default function NoticePage() {
 
       <h2>Contact</h2>
       <p>
-        For any request relating to this Legal Notice, email{" "}
-        <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
+        For any request relating to this Legal Notice, reach us on{" "}
+        <a href={CONTACT_DISCORD} target="_blank" rel="noreferrer">
+          our Discord server
+        </a>
+        .
       </p>
     </LegalPage>
   );

@@ -21,6 +21,7 @@
 
   --glass: rgba(255, 255, 255, 0.06);
   --line: rgba(255, 255, 255, 0.14);
+  --bg: #05080d;        /* page base / fade target (was duplicated as a literal) */
 }
 
 html, body { margin: 0; padding: 0; }
@@ -35,7 +36,7 @@ body {
   color: var(--txt);
   background:
     url("/bg.jpg") center / cover fixed no-repeat,
-    #05080d;
+    var(--bg);
   font-family: var(--font-inter), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -44,12 +45,12 @@ body {
 .bgfx { position: fixed; inset: 0; z-index: -2; overflow: hidden; }
 .orb { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55;
   animation: float 18s ease-in-out infinite; }
-.orb.a { width: 520px; height: 520px; background: #ff4655; top: -120px; left: -80px; }
+.orb.a { width: 520px; height: 520px; background: var(--red); top: -120px; left: -80px; }
 .orb.b { width: 480px; height: 480px; background: #3f1efe; top: 20%; right: -120px; animation-delay: -6s; }
 .orb.c { width: 440px; height: 440px; background: #2b7fff; bottom: -140px; left: 25%; animation-delay: -11s; }
 .orb.d { width: 360px; height: 360px; background: #ffb13d; bottom: 10%; right: 18%; opacity: .35; animation-delay: -3s; }
 @keyframes float { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(40px,-30px) scale(1.08); } }
-.grain { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at 50% 50%, transparent, #05080d 90%); }
+.grain { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at 50% 50%, transparent, var(--bg) 90%); }
 
 .glass {
   background: var(--glass);
@@ -320,4 +321,15 @@ select optgroup {
 /* Respect reduced-motion: freeze the loading spinner. */
 @media (prefers-reduced-motion: reduce) {
   [data-spinner] { animation: none !important; }
+}
+
+/* PERF-06: backdrop-filter blur and big blurred orbs are GPU-expensive on
+   phones. Soften them on small screens to cut compositing cost. */
+@media (max-width: 720px) {
+  .orb { filter: blur(44px); opacity: .38; animation: none; }
+  .glass,
+  .slide-arrow {
+    backdrop-filter: blur(12px) saturate(130%);
+    -webkit-backdrop-filter: blur(12px) saturate(130%);
+  }
 }

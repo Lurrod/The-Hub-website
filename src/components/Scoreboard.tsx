@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { ScoreboardPlayer } from "@/lib/db/matches";
 
 // Mirrors the bot scoreboard (services/scoreboard_img.py), glass-styled.
@@ -28,14 +29,15 @@ function agentSrc(agent: string): string {
 
 function AgentIcon({ agent }: { agent: string }) {
   return (
-    <span
+    <Image
+      src={agentSrc(agent)}
+      alt={agent}
       title={agent}
+      width={26}
+      height={26}
       style={{
-        width: 26, height: 26, borderRadius: 6, flex: "0 0 auto",
+        borderRadius: 6, flex: "0 0 auto", objectFit: "cover",
         background: "linear-gradient(135deg,#2a3b4a,#1a2530)",
-        backgroundImage: `url("${agentSrc(agent)}")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
         display: "inline-block",
       }}
     />

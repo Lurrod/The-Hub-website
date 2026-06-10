@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Search",
   description: "Find a player by name across the Fast Learner x The Hub ladders.",
+  robots: { index: false, follow: true },
 };
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {

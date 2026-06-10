@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 const UPDATED = "June 9, 2026";
-const CONTACT = "borde.titouan.47@gmail.com";
+const CONTACT_DISCORD = "https://discord.com/invite/aSZNHuhJg5";
 
 export default function TermsPage() {
   return (
@@ -100,8 +100,11 @@ export default function TermsPage() {
 
       <h2>Contact</h2>
       <p>
-        Questions about these Terms? Email{" "}
-        <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
+        Questions about these Terms? Reach us on{" "}
+        <a href={CONTACT_DISCORD} target="_blank" rel="noreferrer">
+          our Discord server
+        </a>
+        .
       </p>
     </LegalPage>
   );

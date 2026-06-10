@@ -33,8 +33,8 @@ describe("countries", () => {
     expect(flagEmoji("ZZ")).toBe("");
   });
 
-  it("builds a flagcdn URL (lowercased) for a known code and nothing for an unknown one", () => {
-    expect(flagUrl("FR")).toBe("https://flagcdn.com/fr.svg");
+  it("builds a flagcdn PNG URL (lowercased) for a known code and nothing for an unknown one", () => {
+    expect(flagUrl("FR")).toBe("https://flagcdn.com/w80/fr.png");
     expect(flagUrl("ZZ")).toBe("");
   });
 });

@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "My Profile",
   description: "Edit your public profile — bio, favorite role, nationality and social links.",
+  robots: { index: false, follow: true },
 };
 
 export default async function MePage() {

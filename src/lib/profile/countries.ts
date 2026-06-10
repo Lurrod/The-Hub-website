@@ -227,11 +227,11 @@ export function flagEmoji(code: string): string {
 }
 
 /**
- * CDN URL for a country's flag (SVG, real proportions) via flagcdn.com.
- * Renders identically on every OS, unlike emoji flags (Windows shows the
- * code instead). Returns "" for an unknown code.
+ * CDN URL for a country's flag (PNG, ~80px wide) via flagcdn.com. PNG (not
+ * SVG) so it can flow through next/image without enabling remote SVG.
+ * Renders identically on every OS, unlike emoji flags. "" for unknown codes.
  */
 export function flagUrl(code: string): string {
   if (!isCountryCode(code)) return "";
-  return `https://flagcdn.com/${code.toLowerCase()}.svg`;
+  return `https://flagcdn.com/w80/${code.toLowerCase()}.png`;
 }

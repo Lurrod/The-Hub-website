@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import SearchBox from "./SearchBox";
 import { auth, signIn, signOut } from "@/auth";
 import Avatar from "./Avatar";
@@ -11,7 +12,7 @@ export default async function Navbar() {
       gap: 18, margin: "14px auto 0", maxWidth: 1100, padding: "12px 22px", borderRadius: 16,
     }}>
       <Link href="/" aria-label="The Hub - home" style={{ display: "flex", alignItems: "center", flex: "0 0 auto" }}>
-        <span aria-hidden style={{ width: 42, height: 42, display: "block", backgroundImage: 'url("/fl_logo.png")', backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundPosition: "center" }} />
+        <Image src="/fl_logo.png" alt="The Hub logo" width={42} height={42} priority style={{ display: "block", objectFit: "contain" }} />
       </Link>
       <SearchBox />
       <div className="nav-links" style={{ marginLeft: "auto", display: "flex", gap: 22, fontWeight: 600, fontSize: 13, color: "var(--muted)" }}>

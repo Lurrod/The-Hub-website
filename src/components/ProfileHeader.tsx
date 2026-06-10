@@ -1,17 +1,10 @@
+import Image from "next/image";
 import Avatar from "./Avatar";
 import type { PlayerProfile } from "@/lib/db/profile";
 import { QUEUE_LABELS } from "@/lib/db/types";
 import { countryName, flagUrl } from "@/lib/profile/countries";
 
 type SocialKind = "twitch" | "twitter" | "youtube" | "vlr" | "tracker";
-
-function logoImg(url: string): React.CSSProperties {
-  return {
-    width: 22, height: 22, display: "block",
-    backgroundImage: `url("${url}")`, backgroundSize: "contain",
-    backgroundRepeat: "no-repeat", backgroundPosition: "center",
-  };
-}
 
 function SocialIcon({ kind }: { kind: SocialKind }) {
   switch (kind) {
@@ -34,9 +27,9 @@ function SocialIcon({ kind }: { kind: SocialKind }) {
         </svg>
       );
     case "tracker":
-      return <span aria-hidden style={logoImg("/icons/tracker.png")} />;
+      return <Image src="/icons/tracker.png" alt="" aria-hidden width={22} height={22} style={{ display: "block", objectFit: "contain" }} />;
     case "vlr":
-      return <span aria-hidden style={logoImg("/icons/vlr.png")} />;
+      return <Image src="/icons/vlr.png" alt="" aria-hidden width={22} height={22} style={{ display: "block", objectFit: "contain" }} />;
   }
 }
 
@@ -61,7 +54,7 @@ export default function ProfileHeader({ profile }: { profile: PlayerProfile }) {
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "10px 0" }}>
             {wp?.favorite_role && (
               <span style={{ ...chip, display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <span aria-hidden style={{ width: 16, height: 16, display: "block", backgroundImage: `url("/roles/${wp.favorite_role.toLowerCase()}.png")`, backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundPosition: "center" }} />
+                <Image src={`/roles/${wp.favorite_role.toLowerCase()}.png`} alt="" aria-hidden width={16} height={16} style={{ display: "block", objectFit: "contain" }} />
                 {wp.favorite_role}
               </span>
             )}
@@ -71,16 +64,16 @@ export default function ProfileHeader({ profile }: { profile: PlayerProfile }) {
                 aria-label={countryName(wp.nationality)}
                 style={{ ...chip, display: "inline-flex", alignItems: "center", padding: "6px 12px" }}
               >
-                <span
+                <Image
+                  src={flagUrl(wp.nationality)}
+                  alt=""
                   aria-hidden
+                  width={24}
+                  height={18}
                   style={{
-                    width: 24,
-                    height: 18,
                     display: "block",
                     borderRadius: 3,
-                    backgroundImage: `url("${flagUrl(wp.nationality)}")`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
+                    objectFit: "cover",
                     boxShadow: "0 0 0 1px rgba(255,255,255,.18)",
                   }}
                 />

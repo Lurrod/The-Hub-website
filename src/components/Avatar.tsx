@@ -1,15 +1,18 @@
+import Image from "next/image";
 import { initials } from "./ui";
 
 export default function Avatar({ name, size = 36, src }: { name: string; size?: number; src?: string | null }) {
   if (src) {
     return (
-      <span
-        role="img"
-        aria-label={name}
+      <Image
+        src={src}
+        alt={name}
+        width={size}
+        height={size}
+        sizes={`${size}px`}
         style={{
-          width: size, height: size, borderRadius: "50%", flex: "0 0 auto", display: "block",
-          backgroundImage: `url("${src}")`, backgroundSize: "cover", backgroundPosition: "center",
-          border: "1px solid var(--line)",
+          borderRadius: "50%", flex: "0 0 auto", display: "block",
+          objectFit: "cover", border: "1px solid var(--line)",
         }}
       />
     );
