@@ -50,6 +50,7 @@ function makePlayer(userId, queue, name, skill, daysAgo) {
       first_kills: firstKills, first_deaths: firstDeaths,
       kast_rounds: kastRounds, rating_2_0_sum: Number((ratingAvg * games).toFixed(2)),
       acs_sum: Math.round(150 + skill * 130) * games,
+      acs_games: games,
       updated_at: new Date(Date.now() - daysAgo * 24 * 3600 * 1000),
     },
     elo: {

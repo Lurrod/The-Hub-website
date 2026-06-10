@@ -25,6 +25,7 @@ const agg: RatingAggregate = {
   kast_rounds: 150,
   rating_2_0_sum: 11.5,
   acs_sum: 2810,
+  acs_games: 10,
   updated_at: new Date("2026-06-01T00:00:00Z"),
 };
 
@@ -63,10 +64,26 @@ describe("buildStatLine", () => {
     expect(s.updatedAt).toEqual(new Date("2026-06-01T00:00:00Z"));
   });
 
+  it("averages ACS over acs_games, not total games", () => {
+    // 10 season games but ACS recorded on only 2 of them (accumulation
+    // started mid-season): the average must not be diluted by the 8 others.
+    const partial: RatingAggregate = { ...agg, acs_sum: 500, acs_games: 2 };
+    const s = buildStatLine(partial, elo);
+    expect(s.acs).toBeCloseTo(250, 5);
+  });
+
+  it("returns null ACS when acs_games is missing (pre-backfill aggregate)", () => {
+    const legacy: RatingAggregate = { ...agg };
+    delete legacy.acs_games;
+    const s = buildStatLine(legacy, elo);
+    expect(s.acs).toBeNull();
+  });
+
   it("returns null derived stats when rounds/games/shots are zero", () => {
     const empty: RatingAggregate = {
       ...agg,
       games: 0,
+      acs_games: 0,
       rounds_played: 0,
       deaths: 0,
       headshots: 0,

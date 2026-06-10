@@ -32,9 +32,13 @@ export interface RatingAggregate {
   first_deaths: number;
   kast_rounds: number;
   rating_2_0_sum: number;
-  /** Sum of per-match ACS; present only on aggregates updated after the bot
-   * started accumulating it (older docs lack it → season ACS shows as null). */
+  /** Sum of per-match ACS; only matches played since the bot started
+   * accumulating it (2026-06-08) are included, so it may cover fewer
+   * matches than `games`. */
   acs_sum?: number;
+  /** Number of matches included in `acs_sum` — the correct denominator for
+   * season ACS. Absent until the backfill script has run on the aggregate. */
+  acs_games?: number;
   updated_at: Date;
 }
 

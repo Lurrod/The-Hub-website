@@ -40,7 +40,7 @@ export function buildStatLine(agg: RatingAggregate, elo: EloDoc): PlayerStatLine
     name: elo.name,
     games: agg.games,
     rating: safeDiv(agg.rating_2_0_sum, agg.games),
-    acs: agg.acs_sum != null ? safeDiv(agg.acs_sum, agg.games) : null,
+    acs: agg.acs_sum != null && agg.acs_games != null ? safeDiv(agg.acs_sum, agg.acs_games) : null,
     adr: safeDiv(agg.damage_made, r),
     kd: safeDiv(agg.kills, agg.deaths),
     kastPct: pct(agg.kast_rounds, r),
