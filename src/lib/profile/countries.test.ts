@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { COUNTRIES, isCountryCode, countryName, flagEmoji } from "./countries";
+import { COUNTRIES, isCountryCode, countryName, flagEmoji, flagUrl } from "./countries";
 
 describe("countries", () => {
   it("exposes a non-trivial, well-formed list", () => {
@@ -31,5 +31,10 @@ describe("countries", () => {
   it("builds a flag emoji from a known code and nothing from an unknown one", () => {
     expect(flagEmoji("FR")).toBe("🇫🇷");
     expect(flagEmoji("ZZ")).toBe("");
+  });
+
+  it("builds a flagcdn URL (lowercased) for a known code and nothing for an unknown one", () => {
+    expect(flagUrl("FR")).toBe("https://flagcdn.com/fr.svg");
+    expect(flagUrl("ZZ")).toBe("");
   });
 });

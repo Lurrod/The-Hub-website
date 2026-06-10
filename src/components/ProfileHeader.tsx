@@ -1,7 +1,7 @@
 import Avatar from "./Avatar";
 import type { PlayerProfile } from "@/lib/db/profile";
 import { QUEUE_LABELS } from "@/lib/db/types";
-import { countryName, flagEmoji } from "@/lib/profile/countries";
+import { countryName, flagUrl } from "@/lib/profile/countries";
 
 type SocialKind = "twitch" | "twitter" | "youtube" | "vlr" | "tracker";
 
@@ -69,9 +69,21 @@ export default function ProfileHeader({ profile }: { profile: PlayerProfile }) {
               <span
                 title={countryName(wp.nationality)}
                 aria-label={countryName(wp.nationality)}
-                style={{ ...chip, display: "inline-flex", alignItems: "center", padding: "6px 12px", fontSize: 18, lineHeight: 1 }}
+                style={{ ...chip, display: "inline-flex", alignItems: "center", padding: "6px 12px" }}
               >
-                <span aria-hidden>{flagEmoji(wp.nationality)}</span>
+                <span
+                  aria-hidden
+                  style={{
+                    width: 24,
+                    height: 18,
+                    display: "block",
+                    borderRadius: 3,
+                    backgroundImage: `url("${flagUrl(wp.nationality)}")`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    boxShadow: "0 0 0 1px rgba(255,255,255,.18)",
+                  }}
+                />
               </span>
             )}
           </div>

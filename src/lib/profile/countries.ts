@@ -225,3 +225,13 @@ export function flagEmoji(code: string): string {
     .toUpperCase()
     .replace(/[A-Z]/g, (ch) => String.fromCodePoint(127397 + ch.charCodeAt(0)));
 }
+
+/**
+ * CDN URL for a country's flag (SVG, real proportions) via flagcdn.com.
+ * Renders identically on every OS, unlike emoji flags (Windows shows the
+ * code instead). Returns "" for an unknown code.
+ */
+export function flagUrl(code: string): string {
+  if (!isCountryCode(code)) return "";
+  return `https://flagcdn.com/${code.toLowerCase()}.svg`;
+}
