@@ -44,4 +44,14 @@ describe("readDashboard", () => {
       visitors: 2,
     });
   });
+
+  it("uses defaults (today/now) and reports zeros for an empty window", async () => {
+    const stats = await readDashboard();
+    expect(stats.series).toHaveLength(30);
+    expect(typeof stats.registered).toBe("number");
+    // Today (real date) has no analytics docs in this in-memory DB → ?? 0 paths.
+    expect(stats.todayPageViews).toBe(0);
+    expect(stats.todayVisitors).toBe(0);
+    expect(stats.series[stats.series.length - 1].pageViews).toBe(0);
+  });
 });

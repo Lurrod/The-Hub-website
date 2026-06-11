@@ -44,4 +44,14 @@ describe("recordHit", () => {
       .countDocuments({ day: "2026-03-01" });
     expect(visitors).toBe(2);
   });
+
+  it("defaults to today's bucket when no day is given", async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    await recordHit({ ip: "7.7.7.7", userAgent: "UA" });
+    const db = await getDb();
+    const doc = await db
+      .collection<{ _id: string; pageviews: number }>("analytics_daily")
+      .findOne({ _id: today });
+    expect(doc?.pageviews ?? 0).toBeGreaterThanOrEqual(1);
+  });
 });
