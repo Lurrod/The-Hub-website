@@ -6,9 +6,20 @@ export function dayKey(date: Date = new Date()): string {
   return date.toISOString().slice(0, 10);
 }
 
-/** Pure, deterministic anonymous visitor fingerprint for one day. */
+/**
+ * Pure, deterministic anonymous visitor fingerprint for one day. Fields are
+ * joined with a NUL byte (which cannot appear in an IP or a header value) so
+ * that e.g. an IPv6 address's internal colons can't shift the field boundary
+ * and collide two distinct visitors.
+ */
 export function visitorHash(salt: string, ip: string, userAgent: string): string {
-  return createHash("sha256").update(`${salt}:${ip}:${userAgent}`).digest("hex");
+  return createHash("sha256")
+    .update(salt)
+    .update("\x00")
+    .update(ip)
+    .update("\x00")
+    .update(userAgent)
+    .digest("hex");
 }
 
 /**
@@ -26,5 +37,11 @@ export async function getDailySalt(day: string): Promise<string> {
       { $setOnInsert: { salt: candidate, createdAt: new Date() } },
       { upsert: true, returnDocument: "after" },
     );
-  return res?.salt ?? candidate;
+  // With upsert + returnDocument:"after" the driver always returns the document.
+  // A null here means the salt was never persisted — fail loud rather than
+  // return an unstored salt that would mis-count every hit as a new visitor.
+  if (!res?.salt) {
+    throw new Error(`getDailySalt: upsert returned no document for day ${day}`);
+  }
+  return res.salt;
 }

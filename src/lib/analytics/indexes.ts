@@ -1,6 +1,9 @@
 import { getDb } from "@/lib/db/client";
 
-const VISITOR_TTL_SECONDS = 3 * 24 * 60 * 60; // 3 days
+// Visitor rows feed the 30-day dashboard series, so they must outlive that
+// window. They are anonymous (salted hashes; the salt is purged after 2 days,
+// making them irreversible), so 31-day retention carries no PII.
+const VISITOR_TTL_SECONDS = 31 * 24 * 60 * 60; // 31 days
 const SALT_TTL_SECONDS = 2 * 24 * 60 * 60; // 2 days
 
 let ensured: Promise<void> | null = null;

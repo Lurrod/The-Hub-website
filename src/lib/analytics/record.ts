@@ -16,6 +16,9 @@ export async function recordHit({ ip, userAgent, day }: HitInput): Promise<void>
   const h = visitorHash(salt, ip, userAgent);
   const db = await getDb();
 
+  // Page view is incremented before the visitor upsert intentionally: if the
+  // visitor write fails transiently we'd rather over-count pageviews than count
+  // a visitor with no pageview. Don't reverse this ordering.
   await db
     .collection<{ _id: string; pageviews: number }>("analytics_daily")
     .updateOne({ _id: d }, { $inc: { pageviews: 1 } }, { upsert: true });
