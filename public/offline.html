@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Offline — The Hub</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        display: flex; align-items: center; justify-content: center;
+        min-height: 100%; padding: 24px;
+        background: radial-gradient(120% 120% at 50% 0%, #0b1422 0%, #05080d 60%);
+        color: #e6edf6;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        text-align: center;
+      }
+      .card {
+        max-width: 460px; width: 100%;
+        padding: 40px 28px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(8px);
+      }
+      .badge {
+        font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+        color: #5b8cff; font-weight: 700;
+      }
+      h1 { margin: 14px 0 8px; font-size: 26px; }
+      p { margin: 0 0 24px; color: #9fb0c6; line-height: 1.5; font-size: 14px; }
+      button {
+        appearance: none; border: 0; cursor: pointer;
+        padding: 12px 22px; border-radius: 10px;
+        background: #1f6feb; color: #fff; font-weight: 700; font-size: 14px;
+      }
+      button:hover { background: #2a7bff; }
+      button:focus-visible { outline: 2px solid #9fc0ff; outline-offset: 2px; }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="badge">The Hub</div>
+      <h1>You're offline</h1>
+      <p>
+        We couldn't reach the network. Stats and profiles need a connection —
+        check your link and try again.
+      </p>
+      <button type="button" onclick="location.reload()">Retry</button>
+    </main>
+  </body>
+</html>

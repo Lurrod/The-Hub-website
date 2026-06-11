@@ -5,6 +5,7 @@ import { SITE_URL } from "@/lib/site";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Hit } from "@/components/Hit";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const teko = Teko({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-teko" });
@@ -76,6 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${inter.variable} ${teko.variable} ${mono.variable}`}>
         <Hit />
+        <ServiceWorkerRegister />
         <script
           type="application/ld+json"
           // Escape "<" so a future dynamic field can't break out of the script tag.
