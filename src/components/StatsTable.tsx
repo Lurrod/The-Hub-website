@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import type { PlayerStatLine } from "@/lib/stats/derive";
 import { fmt, fmtPct, ratingClass } from "@/components/format";
+import { statTip } from "@/components/stat-tooltips";
 
 type Key = "name" | "games" | "rating" | "acs" | "adr" | "kd" | "kastPct" | "kpr" | "apr" | "fkpr" | "fdpr" | "hsPct" | "elo";
 
@@ -79,14 +80,15 @@ export default function StatsTable({ lines }: { lines: StatRow[] }) {
                     // rest to avoid screen readers announcing "none" everywhere).
                     // The left-aligned text column (name) sorts A->Z; the rest desc.
                     aria-sort={active ? (c.left ? "ascending" : "descending") : undefined}
-                    style={{ textAlign: c.left ? "left" : "right", padding: 0, whiteSpace: "nowrap" }}
+                    style={{ textAlign: c.left ? "left" : "center", padding: 0, whiteSpace: "nowrap" }}
                   >
                     <button
                       type="button"
                       onClick={() => setSortKey(c.key)}
+                      title={statTip(c.label)}
                       style={{
                         width: "100%", background: "none", border: "none", cursor: "pointer",
-                        font: "inherit", textAlign: c.left ? "left" : "right", padding: "13px 12px",
+                        font: "inherit", textAlign: c.left ? "left" : "center", padding: "13px 12px",
                         color: active ? "#fff" : "var(--muted)", fontSize: 11,
                         textTransform: "uppercase", letterSpacing: .5, fontWeight: 800, whiteSpace: "nowrap",
                       }}
@@ -106,7 +108,7 @@ export default function StatsTable({ lines }: { lines: StatRow[] }) {
               <tr key={l.userId} style={{ borderTop: "1px solid rgba(255,255,255,.07)" }}>
                 {COLS.map((c) => (
                   <td key={c.key} className={c.key === "rating" ? ratingClass(l.rating) : ""} style={{
-                    textAlign: c.left ? "left" : "right", padding: "11px 12px",
+                    textAlign: c.left ? "left" : "center", padding: "11px 12px",
                     fontWeight: c.key === "name" || c.key === "rating" || c.key === "elo" ? 700 : 400,
                     color: c.key === "elo" ? "var(--gold)" : undefined, whiteSpace: "nowrap",
                   }}>{c.key === "name"

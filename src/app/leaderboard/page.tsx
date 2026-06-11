@@ -4,6 +4,7 @@ import { getCachedQueueStatLines } from "@/lib/db/players";
 import { rankLeaderboard } from "@/lib/stats/leaderboard";
 import { QUEUE_TYPES, type QueueType } from "@/lib/db/types";
 import { fmt } from "@/components/format";
+import { statTip } from "@/components/stat-tooltips";
 import QueueTabs from "@/components/QueueTabs";
 
 // No `revalidate`: this page's content is driven entirely by the `?queue=`
@@ -38,12 +39,16 @@ export default async function Home({
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
             <tr>
-              {["#", "Player", "ELO", "W-L", "Rating", "Games"].map((h, i) => (
-                <th key={h} style={{
-                  textAlign: i <= 1 ? "left" : "right", padding: "13px 12px", color: "var(--muted)",
+              {["#", "Player", "ELO", "W-L", "Rating", "Games"].map((h, i) => {
+                const tip = statTip(h);
+                return (
+                <th key={h} title={tip} style={{
+                  textAlign: i <= 1 ? "left" : "center", padding: "13px 12px", color: "var(--muted)",
                   fontSize: 11, textTransform: "uppercase", letterSpacing: .5, fontWeight: 800,
+                  cursor: tip ? "help" : undefined,
                 }}>{h}</th>
-              ))}
+                );
+              })}
             </tr>
           </thead>
           <tbody>
@@ -56,10 +61,10 @@ export default async function Home({
                 <td style={{ padding: "11px 12px", fontWeight: 700 }}>
                   <Link href={`/player/${l.userId}`} style={{ color: "var(--txt)", textDecoration: "none" }}>{l.name}</Link>
                 </td>
-                <td style={{ padding: "11px 12px", textAlign: "right", color: "var(--gold)", fontWeight: 700 }}>{l.elo}</td>
-                <td style={{ padding: "11px 12px", textAlign: "right" }}>{l.wins}-{l.losses}</td>
-                <td style={{ padding: "11px 12px", textAlign: "right" }}>{fmt(l.rating)}</td>
-                <td style={{ padding: "11px 12px", textAlign: "right" }}>{l.games}</td>
+                <td style={{ padding: "11px 12px", textAlign: "center", color: "var(--gold)", fontWeight: 700 }}>{l.elo}</td>
+                <td style={{ padding: "11px 12px", textAlign: "center" }}>{l.wins}-{l.losses}</td>
+                <td style={{ padding: "11px 12px", textAlign: "center" }}>{fmt(l.rating)}</td>
+                <td style={{ padding: "11px 12px", textAlign: "center" }}>{l.games}</td>
               </tr>
             ))}
           </tbody>

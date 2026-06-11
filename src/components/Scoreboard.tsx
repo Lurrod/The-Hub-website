@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { ScoreboardPlayer } from "@/lib/db/matches";
+import { statTip } from "./stat-tooltips";
 
 // Mirrors the bot scoreboard (services/scoreboard_img.py), glass-styled.
 // Columns: PLAYER · agent · R · ELO +/- · ACS · K / D / A · +/- · KAST · ADR · HS% · FK · FD · +/-
@@ -64,6 +65,16 @@ const COLS: { key: string; label: string }[] = [
   { key: "fkfd", label: "+/-" },
 ];
 
+// Per-column tooltips. The two "+/-" columns are ambiguous, so they're keyed
+// explicitly here; everything else falls back to the shared stat dictionary.
+const COL_TIPS: Record<string, string> = {
+  kddiff: "Kills minus Deaths",
+  fkfd: "First Kills minus First Deaths",
+};
+function colTip(c: { key: string; label: string }): string | undefined {
+  return COL_TIPS[c.key] ?? statTip(c.label);
+}
+
 function pct(n: number | null): string {
   return n === null ? "-" : `${Math.round(n)}%`;
 }
@@ -83,7 +94,10 @@ function TeamBlock({ title, players, won }: { title: string; players: Scoreboard
         <thead>
           <tr style={{ background: "rgba(255,255,255,.03)" }}>
             <th style={{ ...TH, textAlign: "left", paddingLeft: 18 }}>PLAYER</th>
-            {COLS.map((c) => (<th key={c.key} style={TH}>{c.label}</th>))}
+            {COLS.map((c) => {
+              const tip = colTip(c);
+              return (<th key={c.key} title={tip} style={{ ...TH, cursor: tip ? "help" : undefined }}>{c.label}</th>);
+            })}
           </tr>
         </thead>
         <tbody>
