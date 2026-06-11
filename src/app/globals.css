@@ -92,6 +92,9 @@ body {
 .slide-arrow:active { transform: scale(.96); }
 .slide-arrow svg { width: 16px; height: 16px; }
 
+/* Hover state for FlagSelect (nationality picker) options. */
+.flag-opt:hover { background: rgba(255, 255, 255, .07); }
+
 /* Native dropdowns: the OS popup defaults to a light background, which makes
    our light --txt option text unreadable. Force a dark popup site-wide. */
 select option,

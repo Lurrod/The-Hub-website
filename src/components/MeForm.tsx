@@ -3,7 +3,7 @@ import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { saveProfile, type SaveResult } from "@/app/me/actions";
 import { ROLES } from "@/lib/profile/schema";
-import { COUNTRIES, flagEmoji } from "@/lib/profile/countries";
+import FlagSelect from "@/components/FlagSelect";
 
 interface Initial {
   bio: string;
@@ -135,14 +135,7 @@ export default function MeForm({
         </Field>
 
         <Field label="Nationality">
-          <select name="nationality" defaultValue={initial.nationality} style={input}>
-            <option value="">-</option>
-            {COUNTRIES.map((c) => (
-              <option key={c.code} value={c.code}>
-                {flagEmoji(c.code)} {c.name}
-              </option>
-            ))}
-          </select>
+          <FlagSelect name="nationality" defaultValue={initial.nationality} />
         </Field>
       </div>
 
