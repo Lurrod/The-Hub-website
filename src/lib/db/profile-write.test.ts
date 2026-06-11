@@ -84,4 +84,16 @@ describe("syncDiscordIdentity", () => {
     const doc = await db.collection<IdDoc>("web_profiles").findOne({ _id: "" });
     expect(doc).toBeNull();
   });
+
+  it("stamps last_seen on the profile when syncing identity", async () => {
+    const { syncDiscordIdentity } = await import("./profile-write");
+    const db = client.db("elobot");
+    const before = Date.now();
+    await syncDiscordIdentity("login-user", { username: "Neo", avatar: "abc" });
+    const doc = await db
+      .collection<{ _id: string; last_seen?: Date }>("web_profiles")
+      .findOne({ _id: "login-user" });
+    expect(doc?.last_seen).toBeInstanceOf(Date);
+    expect(doc!.last_seen!.getTime()).toBeGreaterThanOrEqual(before);
+  });
 });
