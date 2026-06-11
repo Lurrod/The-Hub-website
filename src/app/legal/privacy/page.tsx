@@ -41,6 +41,13 @@ export default function PrivacyPage() {
           keep you signed in (see our{" "}
           <a href="/legal/cookies">Cookie Policy</a>).
         </li>
+        <li>
+          <strong>Visit statistics.</strong> To measure traffic, your IP address
+          and browser user-agent are processed transiently and combined into a
+          one-way salted hash (the salt rotates and is deleted daily, making the
+          hash irreversible). This lets us count unique visitors without
+          identifying you and without setting any tracking cookie.
+        </li>
       </ul>
 
       <h2>How we use your data</h2>
@@ -50,6 +57,19 @@ export default function PrivacyPage() {
         <li>To build leaderboards and match histories for the community.</li>
         <li>To operate, maintain, and improve the Platform.</li>
       </ul>
+
+      <h2>Visit statistics &amp; analytics</h2>
+      <p>
+        We run our own privacy-friendly, cookieless audience measurement. When a
+        page loads, your IP address and user-agent are hashed with a secret salt
+        that rotates every day and is then discarded, so the resulting value
+        cannot be linked back to you afterwards. We only retain aggregated counts
+        (page views and approximate unique-visitor totals); the daily salt is
+        purged automatically. We do <strong>not</strong> use Google Analytics or
+        any third-party tracker, and we set no analytics cookie. The legal basis
+        for this processing is our <strong>legitimate interest</strong> in
+        understanding traffic to operate and improve the Platform.
+      </p>
 
       <h2>Legal basis</h2>
       <p>

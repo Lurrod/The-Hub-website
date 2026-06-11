@@ -31,18 +31,19 @@ export default async function Home({
 
   return (
     <>
-      <div className="eyebrow" style={{ textTransform: "uppercase", letterSpacing: 3, fontSize: 11, color: "var(--muted)", fontWeight: 700, margin: "20px 4px 12px" }}>
+      <h1 className="eyebrow" style={{ textTransform: "uppercase", letterSpacing: 3, fontSize: 11, color: "var(--muted)", fontWeight: 700, margin: "20px 4px 12px" }}>
         Leaderboard
-      </div>
+      </h1>
       <QueueTabs active={queue} basePath="/leaderboard" />
       <div className="glass" style={{ overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+          <caption className="sr-only">Leaderboard ranking by ELO for the selected queue</caption>
           <thead>
             <tr>
               {["#", "Player", "ELO", "W-L", "Rating", "Games"].map((h, i) => {
                 const tip = statTip(h);
                 return (
-                <th key={h} title={tip} style={{
+                <th key={h} scope="col" title={tip} style={{
                   textAlign: i <= 1 ? "left" : "center", padding: "13px 12px", color: "var(--muted)",
                   fontSize: 11, textTransform: "uppercase", letterSpacing: .5, fontWeight: 800,
                   cursor: tip ? "help" : undefined,
@@ -58,9 +59,9 @@ export default async function Home({
             {lines.map((l, i) => (
               <tr key={l.userId} style={{ borderTop: "1px solid rgba(255,255,255,.07)" }}>
                 <td style={{ padding: "11px 12px", color: i < 3 ? "var(--gold)" : "var(--muted)", fontWeight: 700 }}>{i + 1}</td>
-                <td style={{ padding: "11px 12px", fontWeight: 700 }}>
+                <th scope="row" style={{ padding: "11px 12px", fontWeight: 700, textAlign: "left" }}>
                   <Link href={`/player/${l.userId}`} style={{ color: "var(--txt)", textDecoration: "none" }}>{l.name}</Link>
-                </td>
+                </th>
                 <td style={{ padding: "11px 12px", textAlign: "center", color: "var(--gold)", fontWeight: 700 }}>{l.elo}</td>
                 <td style={{ padding: "11px 12px", textAlign: "center" }}>{l.wins}-{l.losses}</td>
                 <td style={{ padding: "11px 12px", textAlign: "center" }}>{fmt(l.rating)}</td>

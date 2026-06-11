@@ -196,9 +196,10 @@ select optgroup {
 .t-tab {
   position: relative; appearance: none; border: 0; background: transparent; height: 30px; padding: 4px 12px;
   color: var(--tabs-text-muted); cursor: pointer; border-radius: 48px; z-index: 1;
+  text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
   transition: color var(--tabs-dur) var(--tabs-ease);
 }
-.t-tab:not([aria-selected="true"]):hover, .t-tab[aria-selected="true"] { color: var(--tabs-text-active); }
+.t-tab:not([aria-current="page"]):hover, .t-tab[aria-current="page"] { color: var(--tabs-text-active); }
 .t-tabs-pill {
   position: absolute; top: 3px; left: 0; height: 30px; width: 0; background: var(--tabs-pill-bg); border-radius: 48px;
   transform: translateX(0);

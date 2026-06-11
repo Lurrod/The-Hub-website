@@ -25,6 +25,7 @@ export default async function MePage() {
           marginInline: "auto",
         }}
       >
+        <h1 className="sr-only">My profile</h1>
         <p style={{ color: "var(--muted)", marginTop: 0 }}>
           Sign in to edit your profile.
         </p>
@@ -59,7 +60,7 @@ export default async function MePage() {
 
   return (
     <div style={{ maxWidth: 680, marginInline: "auto" }}>
-      <div
+      <h1
         style={{
           textTransform: "uppercase",
           letterSpacing: "3px",
@@ -70,7 +71,7 @@ export default async function MePage() {
         }}
       >
         My profile
-      </div>
+      </h1>
       <MeForm
         initial={{
           bio: wp?.bio ?? "",

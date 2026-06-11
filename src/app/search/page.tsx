@@ -11,14 +11,16 @@ export const metadata: Metadata = {
 };
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const q = ((await searchParams).q ?? "").trim();
+  // Cap the query length: an unbounded value would build a huge $regex that
+  // can't use an index (DoS vector). 100 chars is well beyond any real name.
+  const q = ((await searchParams).q ?? "").trim().slice(0, 100);
   const hits = q ? await searchPlayers(q) : [];
 
   return (
     <>
-      <div style={{ textTransform: "uppercase", letterSpacing: 3, fontSize: 11, color: "var(--muted)", fontWeight: 700, margin: "22px 4px 12px" }}>
+      <h1 style={{ textTransform: "uppercase", letterSpacing: 3, fontSize: 11, color: "var(--muted)", fontWeight: 700, margin: "22px 4px 12px" }}>
         {q ? `Search - "${q}"` : "Search"}
-      </div>
+      </h1>
       {q && hits.length === 0 && <div className="glass" style={{ padding: 20, color: "var(--muted)" }}>No players found.</div>}
       <div style={{ display: "grid", gap: 10 }}>
         {hits.map((h) => (

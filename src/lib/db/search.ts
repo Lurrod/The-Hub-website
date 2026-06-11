@@ -12,7 +12,9 @@ function escapeRegex(s: string): string {
 
 /** Players whose name contains `query` (case-insensitive), de-duped by user. */
 export async function searchPlayers(query: string, limit = 20): Promise<PlayerHit[]> {
-  const q = query.trim();
+  // Defense in depth (callers should already cap): reject empty or absurdly
+  // long queries so we never compile an unindexable multi-KB $regex.
+  const q = query.trim().slice(0, 100);
   if (q.length === 0) return [];
   const db = await getDb();
   const docs = await db

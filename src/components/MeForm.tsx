@@ -73,6 +73,7 @@ export default function MeForm({
   // server action returns a validation error, then auto-revert on a hold timer.
   const wrapRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const errRef = useRef<HTMLParagraphElement>(null);
   // Dérivé du résultat de l'action serveur — pas de setState dans l'effect.
   const errorMsg = state && state.ok === false ? state.error : "";
 
@@ -86,6 +87,9 @@ export default function MeForm({
       btn.classList.remove("is-shaking");
       void btn.offsetWidth; // force reflow so the shake replays
       btn.classList.add("is-shaking");
+      // Move focus to the error so keyboard/screen-reader users are taken to it
+      // (role="alert" also announces it). Focus, then the visual shake plays.
+      errRef.current?.focus();
 
       const cs = getComputedStyle(document.documentElement);
       const ms = (name: string, fb: number) => {
@@ -199,7 +203,14 @@ export default function MeForm({
             </span>
           )}
         </div>
-        <p className="t-error-msg" style={{ margin: "8px 0 0", color: "var(--red2)", fontSize: 13 }}>
+        <p
+          ref={errRef}
+          className="t-error-msg"
+          role="alert"
+          aria-live="assertive"
+          tabIndex={-1}
+          style={{ margin: "8px 0 0", color: "var(--red2)", fontSize: 13, outline: "none" }}
+        >
           {errorMsg}
         </p>
       </div>
