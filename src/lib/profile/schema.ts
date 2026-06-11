@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { isCountryCode } from "./countries";
 
-export const ROLES = ["Duelist", "Initiator", "Controller", "Sentinel"] as const;
+export const ROLES = ["Duelist", "Initiator", "Controller", "Sentinel", "Flex"] as const;
 
 const nationality = z
   .string()
@@ -37,7 +37,13 @@ function urlOnDomain(domains: string[]) {
 
 export const profileSchema = z.object({
   bio: z.string().trim().max(280).optional().default(""),
-  favorite_role: z.enum(ROLES).or(z.literal("")).optional().default(""),
+  // Players can pick several roles (incl. "Flex"). Deduped, order-preserving.
+  roles: z
+    .array(z.enum(ROLES))
+    .max(20)
+    .optional()
+    .default([])
+    .transform((arr) => [...new Set(arr)]),
   nationality: nationality.optional().default(""),
   twitch: handle.optional().default(""),
   twitter: handle.optional().default(""),

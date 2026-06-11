@@ -1,5 +1,6 @@
 "use client";
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { saveProfile, type SaveResult } from "@/app/me/actions";
 import { ROLES } from "@/lib/profile/schema";
@@ -7,7 +8,7 @@ import FlagSelect from "@/components/FlagSelect";
 
 interface Initial {
   bio: string;
-  favorite_role: string;
+  roles: string[];
   nationality: string;
   twitch: string;
   twitter: string;
@@ -38,22 +39,94 @@ const btn: React.CSSProperties = {
   cursor: "pointer",
 };
 
+const fieldLabel: React.CSSProperties = {
+  fontSize: 11,
+  textTransform: "uppercase",
+  letterSpacing: ".5px",
+  color: "var(--muted)",
+  fontWeight: 700,
+};
+
+const roleChip: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 6,
+  padding: "7px 12px",
+  borderRadius: 999,
+  border: "1px solid var(--line)",
+  background: "rgba(255,255,255,.05)",
+  color: "var(--muted)",
+  fontSize: 13,
+  fontWeight: 600,
+  cursor: "pointer",
+  userSelect: "none",
+  position: "relative",
+  transition: "border-color .15s ease, background .15s ease, color .15s ease",
+};
+
+const roleChipOn: React.CSSProperties = {
+  borderColor: "var(--red)",
+  background: "rgba(217,50,63,.18)",
+  color: "var(--txt)",
+};
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label style={{ display: "grid", gap: 6 }}>
-      <span
-        style={{
-          fontSize: 11,
-          textTransform: "uppercase",
-          letterSpacing: ".5px",
-          color: "var(--muted)",
-          fontWeight: 700,
-        }}
-      >
-        {label}
-      </span>
+      <span style={fieldLabel}>{label}</span>
       {children}
     </label>
+  );
+}
+
+/**
+ * Multi-select roles as toggle chips. Each chip is a styled checkbox named
+ * "roles" so the server action reads them with formData.getAll("roles").
+ * "Flex" has no role icon — render its label only.
+ */
+function RolesPicker({ initialRoles }: { initialRoles: string[] }) {
+  const allowed = new Set<string>(ROLES);
+  const [selected, setSelected] = useState<Set<string>>(
+    () => new Set(initialRoles.filter((r) => allowed.has(r))),
+  );
+
+  const toggle = (role: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(role)) next.delete(role);
+      else next.add(role);
+      return next;
+    });
+
+  return (
+    <div role="group" aria-label="Roles" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      {ROLES.map((r) => {
+        const on = selected.has(r);
+        return (
+          <label key={r} style={{ ...roleChip, ...(on ? roleChipOn : null) }}>
+            <input
+              type="checkbox"
+              name="roles"
+              value={r}
+              checked={on}
+              onChange={() => toggle(r)}
+              style={{ position: "absolute", width: 1, height: 1, opacity: 0, margin: 0 }}
+            />
+            {r !== "Flex" && (
+              <Image
+                src={`/roles/${r.toLowerCase()}.png`}
+                alt=""
+                aria-hidden
+                width={16}
+                height={16}
+                style={{ display: "block", objectFit: "contain" }}
+              />
+            )}
+            <span>{r}</span>
+          </label>
+        );
+      })}
+    </div>
   );
 }
 
@@ -126,22 +199,14 @@ export default function MeForm({
         />
       </Field>
 
-      <div className="two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        <Field label="Favorite role">
-          <select name="favorite_role" defaultValue={initial.favorite_role} style={input}>
-            <option value="">-</option>
-            {ROLES.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field label="Nationality">
-          <FlagSelect name="nationality" defaultValue={initial.nationality} />
-        </Field>
+      <div style={{ display: "grid", gap: 6 }}>
+        <span style={fieldLabel}>Roles</span>
+        <RolesPicker initialRoles={initial.roles} />
       </div>
+
+      <Field label="Nationality">
+        <FlagSelect name="nationality" defaultValue={initial.nationality} />
+      </Field>
 
       <div className="two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         <Field label="Twitch (handle)">

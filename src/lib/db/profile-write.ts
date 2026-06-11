@@ -2,7 +2,7 @@ import { getDb } from "./client";
 
 export interface WebProfileWrite {
   bio: string;
-  favorite_role: string;
+  roles: string[];
   nationality: string;
   socials: { twitch?: string; twitter?: string; youtube?: string };
   vlr_url: string;
@@ -26,7 +26,7 @@ export async function updateWebProfile(
     {
       $set: {
         bio: data.bio,
-        favorite_role: data.favorite_role,
+        roles: data.roles,
         nationality: data.nationality,
         socials: data.socials,
         vlr_url: data.vlr_url,
@@ -35,6 +35,8 @@ export async function updateWebProfile(
         discord_avatar: identity.avatar,
         updated_at: new Date(),
       },
+      // Drop the legacy single-role field once a profile is re-saved.
+      $unset: { favorite_role: "" },
     },
     { upsert: true },
   );

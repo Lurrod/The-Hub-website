@@ -75,7 +75,7 @@ export default async function MePage() {
       <MeForm
         initial={{
           bio: wp?.bio ?? "",
-          favorite_role: wp?.favorite_role ?? "",
+          roles: wp?.roles?.length ? wp.roles : wp?.favorite_role ? [wp.favorite_role] : [],
           nationality: wp?.nationality ?? "",
           twitch: wp?.socials?.twitch ?? "",
           twitter: wp?.socials?.twitter ?? "",
