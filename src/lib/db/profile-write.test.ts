@@ -18,13 +18,13 @@ describe("updateWebProfile", () => {
     const { updateWebProfile } = await import("./profile-write");
     await updateWebProfile(
       "42",
-      { bio: "hello", favorite_role: "Duelist", nationality: "FR", socials: { twitch: "z" }, vlr_url: "", tracker_url: "" },
+      { bio: "hello", roles: ["Duelist", "Flex"], nationality: "FR", socials: { twitch: "z" }, vlr_url: "", tracker_url: "" },
       { username: "Zephyr", avatar: "abc" },
     );
     const db = client.db("elobot");
     const doc = await db.collection<WebProfile & { discord_username?: string; discord_avatar?: string | null }>("web_profiles").findOne({ _id: "42" });
     expect(doc?.bio).toBe("hello");
-    expect(doc?.favorite_role).toBe("Duelist");
+    expect(doc?.roles).toEqual(["Duelist", "Flex"]);
     expect(doc?.nationality).toBe("FR");
     expect(doc?.socials?.twitch).toBe("z");
     expect(doc?.discord_username).toBe("Zephyr");
@@ -32,12 +32,12 @@ describe("updateWebProfile", () => {
 
     await updateWebProfile(
       "42",
-      { bio: "updated", favorite_role: "", nationality: "", socials: {}, vlr_url: "", tracker_url: "" },
+      { bio: "updated", roles: [], nationality: "", socials: {}, vlr_url: "", tracker_url: "" },
       { username: "Zephyr", avatar: "abc" },
     );
     const doc2 = await db.collection<WebProfile & { discord_username?: string; discord_avatar?: string | null }>("web_profiles").findOne({ _id: "42" });
     expect(doc2?.bio).toBe("updated");
-    expect(doc2?.favorite_role).toBe("");
+    expect(doc2?.roles).toEqual([]);
     expect(doc2?.nationality).toBe("");
   });
 });
@@ -50,7 +50,7 @@ describe("syncDiscordIdentity", () => {
     const db = client.db("elobot");
     await updateWebProfile(
       "77",
-      { bio: "keep me", favorite_role: "Sentinel", nationality: "CA", socials: { twitch: "tw" }, vlr_url: "v", tracker_url: "t" },
+      { bio: "keep me", roles: ["Sentinel"], nationality: "CA", socials: { twitch: "tw" }, vlr_url: "v", tracker_url: "t" },
       { username: "OldName", avatar: "oldhash" },
     );
 
@@ -62,7 +62,7 @@ describe("syncDiscordIdentity", () => {
     expect(doc?.discord_avatar).toBe("newhash");
     // everything else preserved
     expect(doc?.bio).toBe("keep me");
-    expect(doc?.favorite_role).toBe("Sentinel");
+    expect(doc?.roles).toEqual(["Sentinel"]);
     expect(doc?.nationality).toBe("CA");
     expect(doc?.socials?.twitch).toBe("tw");
   });

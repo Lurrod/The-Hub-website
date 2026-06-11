@@ -36,6 +36,8 @@ function SocialIcon({ kind }: { kind: SocialKind }) {
 export default function ProfileHeader({ profile }: { profile: PlayerProfile }) {
   const top = profile.queues[0];
   const wp = profile.webProfile;
+  // Prefer the multi-role list; fall back to the legacy single `favorite_role`.
+  const roles = wp?.roles?.length ? wp.roles : wp?.favorite_role ? [wp.favorite_role] : [];
   const socials: { kind: SocialKind; label: string; url: string }[] = [];
   if (wp?.socials?.twitch) socials.push({ kind: "twitch", label: "Twitch", url: `https://twitch.tv/${wp.socials.twitch}` });
   if (wp?.socials?.twitter) socials.push({ kind: "twitter", label: "Twitter / X", url: `https://x.com/${wp.socials.twitter}` });
@@ -50,14 +52,16 @@ export default function ProfileHeader({ profile }: { profile: PlayerProfile }) {
         <h1 className="teko profile-name" style={{ fontFamily: "var(--font-teko)", fontSize: 44, fontWeight: 700, lineHeight: 1, margin: 0 }}>
           {profile.name}
         </h1>
-        {(wp?.favorite_role || (wp?.nationality && countryName(wp.nationality))) && (
+        {(roles.length > 0 || (wp?.nationality && countryName(wp.nationality))) && (
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "10px 0" }}>
-            {wp?.favorite_role && (
-              <span style={{ ...chip, display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <Image src={`/roles/${wp.favorite_role.toLowerCase()}.png`} alt="" aria-hidden width={16} height={16} style={{ display: "block", objectFit: "contain" }} />
-                {wp.favorite_role}
+            {roles.map((r) => (
+              <span key={r} style={{ ...chip, display: "inline-flex", alignItems: "center", gap: 6 }}>
+                {r.toLowerCase() !== "flex" && (
+                  <Image src={`/roles/${r.toLowerCase()}.png`} alt="" aria-hidden width={16} height={16} style={{ display: "block", objectFit: "contain" }} />
+                )}
+                {r}
               </span>
-            )}
+            ))}
             {wp?.nationality && countryName(wp.nationality) && (
               <span
                 title={countryName(wp.nationality)}

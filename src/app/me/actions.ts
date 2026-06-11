@@ -15,7 +15,7 @@ export async function saveProfile(
 
   const parsed = profileSchema.safeParse({
     bio: formData.get("bio") ?? "",
-    favorite_role: formData.get("favorite_role") ?? "",
+    roles: formData.getAll("roles"),
     nationality: formData.get("nationality") ?? "",
     twitch: formData.get("twitch") ?? "",
     twitter: formData.get("twitter") ?? "",
@@ -32,7 +32,7 @@ export async function saveProfile(
     session.discordId,
     {
       bio: d.bio,
-      favorite_role: d.favorite_role,
+      roles: d.roles,
       nationality: d.nationality,
       socials: {
         twitch: d.twitch || undefined,

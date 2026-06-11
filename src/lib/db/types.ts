@@ -57,6 +57,9 @@ export interface EloDoc {
 export interface WebProfile {
   _id: string;
   bio?: string;
+  /** Selected roles (incl. "Flex"). Replaces the legacy single `favorite_role`. */
+  roles?: string[];
+  /** @deprecated legacy single-role field; read for back-compat, no longer written. */
   favorite_role?: string;
   favorite_map?: string;
   /** ISO 3166-1 alpha-2 country code (e.g. "FR"), or absent/"" if unset. */
