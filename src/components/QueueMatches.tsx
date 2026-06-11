@@ -28,8 +28,10 @@ export default function QueueMatches({ children }: { children: ReactNode }) {
 
   const scroll = (dir: number) => ref.current?.scrollBy({ left: dir * 280, behavior: "smooth" });
 
+  // Centre vertically with margin-top (half the 38px height) rather than an
+  // inline `transform`, so the CSS `.slide-arrow:hover` scale isn't overridden.
   const arrowPos = (side: "left" | "right"): React.CSSProperties => ({
-    position: "absolute", top: "50%", transform: "translateY(-50%)", zIndex: 3,
+    position: "absolute", top: "50%", marginTop: -19, zIndex: 3,
     ...(side === "left" ? { left: -50 } : { right: -50 }),
   });
 
