@@ -17,7 +17,7 @@ export async function recordHit({ ip, userAgent, day }: HitInput): Promise<void>
   const db = await getDb();
 
   await db
-    .collection("analytics_daily")
+    .collection<{ _id: string; pageviews: number }>("analytics_daily")
     .updateOne({ _id: d }, { $inc: { pageviews: 1 } }, { upsert: true });
 
   try {
