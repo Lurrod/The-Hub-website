@@ -115,9 +115,9 @@ export default async function MatchesPage() {
 
   return (
     <>
-      <div style={{ textTransform: "uppercase", letterSpacing: 3, fontSize: 11, color: "var(--muted)", fontWeight: 700, margin: "22px 4px 12px" }}>
+      <h1 style={{ textTransform: "uppercase", letterSpacing: 3, fontSize: 11, color: "var(--muted)", fontWeight: 700, margin: "22px 4px 12px" }}>
         Matches in progress
-      </div>
+      </h1>
       {matches.length === 0 ? (
         <div className="glass" style={{ padding: 20, color: "var(--muted)" }}>No matches in progress right now.</div>
       ) : (
@@ -137,9 +137,9 @@ export default async function MatchesPage() {
         })
       )}
 
-      <div style={{ textTransform: "uppercase", letterSpacing: 3, fontSize: 11, color: "var(--muted)", fontWeight: 700, margin: "28px 4px 12px" }}>
+      <h2 style={{ textTransform: "uppercase", letterSpacing: 3, fontSize: 11, color: "var(--muted)", fontWeight: 700, margin: "28px 4px 12px" }}>
         Recent matches
-      </div>
+      </h2>
       {recent.length === 0 ? (
         <div className="glass" style={{ padding: 20, color: "var(--muted)" }}>No matches played yet.</div>
       ) : (

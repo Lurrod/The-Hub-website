@@ -47,9 +47,9 @@ export default function ProfileHeader({ profile }: { profile: PlayerProfile }) {
     <div className="glass profile-head" style={{ display: "flex", gap: 22, alignItems: "center", padding: 26, marginBottom: 16 }}>
       <Avatar name={profile.name} size={92} src={profile.avatarUrl} />
       <div style={{ flex: 1 }}>
-        <div className="teko profile-name" style={{ fontFamily: "var(--font-teko)", fontSize: 44, fontWeight: 700, lineHeight: 1 }}>
+        <h1 className="teko profile-name" style={{ fontFamily: "var(--font-teko)", fontSize: 44, fontWeight: 700, lineHeight: 1, margin: 0 }}>
           {profile.name}
-        </div>
+        </h1>
         {(wp?.favorite_role || (wp?.nationality && countryName(wp.nationality))) && (
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "10px 0" }}>
             {wp?.favorite_role && (

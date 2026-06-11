@@ -68,6 +68,7 @@ export default function StatsTable({ lines }: { lines: StatRow[] }) {
       </div>
       <div className="glass" style={{ overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+          <caption className="sr-only">Player statistics, sortable by column</caption>
           <thead>
             <tr>
               {COLS.map((c) => {
@@ -106,15 +107,25 @@ export default function StatsTable({ lines }: { lines: StatRow[] }) {
             )}
             {rows.map((l) => (
               <tr key={l.userId} style={{ borderTop: "1px solid rgba(255,255,255,.07)" }}>
-                {COLS.map((c) => (
-                  <td key={c.key} className={c.key === "rating" ? ratingClass(l.rating) : ""} style={{
+                {COLS.map((c) => {
+                  const style: React.CSSProperties = {
                     textAlign: c.left ? "left" : "center", padding: "11px 12px",
                     fontWeight: c.key === "name" || c.key === "rating" || c.key === "elo" ? 700 : 400,
                     color: c.key === "elo" ? "var(--gold)" : undefined, whiteSpace: "nowrap",
-                  }}>{c.key === "name"
-                    ? <Link href={`/player/${l.userId}`} style={{ color: "var(--txt)", textDecoration: "none" }}>{l.name}</Link>
-                    : cell(c.key, l)}</td>
-                ))}
+                  };
+                  if (c.key === "name") {
+                    return (
+                      <th key={c.key} scope="row" style={style}>
+                        <Link href={`/player/${l.userId}`} style={{ color: "var(--txt)", textDecoration: "none" }}>{l.name}</Link>
+                      </th>
+                    );
+                  }
+                  return (
+                    <td key={c.key} className={c.key === "rating" ? ratingClass(l.rating) : ""} style={style}>
+                      {cell(c.key, l)}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>

@@ -5,13 +5,25 @@ import { QUEUE_LABELS } from "@/lib/db/types";
 import type { QueueType } from "@/lib/db/types";
 import Scoreboard from "@/components/Scoreboard";
 import RoundBar from "@/components/RoundBar";
+import { SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const d = await getMatchDetail(id);
-  return { title: d?.matchNumber ? `Match #${d.matchNumber}` : "Match" };
+  if (!d) return { title: "Match" };
+  const title = d.matchNumber ? `Match #${d.matchNumber}` : "Match";
+  const score = d.scoreA !== null && d.scoreB !== null ? `, final score ${d.scoreA}-${d.scoreB}` : "";
+  const description = `${QUEUE_LABELS[d.queueType as QueueType]} custom on ${d.map}${score} — Fast Learner x The Hub.`;
+  const url = `/match/${id}`;
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { type: "article", title, description, url },
+    twitter: { card: "summary_large_image", title, description },
+  };
 }
 
 export default async function MatchPage({ params }: { params: Promise<{ id: string }> }) {
@@ -26,8 +38,27 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
   const colorB = d.winner === "b" ? "var(--green)" : d.winner === "a" ? "var(--red2)" : "var(--txt)";
   const teko = (size: number): React.CSSProperties => ({ fontFamily: "var(--font-teko)", fontWeight: 700, lineHeight: 1, fontSize: size });
 
+  const startDate = d.createdAt instanceof Date ? d.createdAt.toISOString() : new Date(d.createdAt).toISOString();
+  const eventLd = {
+    "@context": "https://schema.org",
+    "@type": "SportsEvent",
+    name: `${d.matchNumber ? `Match #${d.matchNumber}` : "Match"} — ${d.map}`,
+    sport: "Valorant",
+    startDate,
+    url: `${SITE_URL}/match/${id}`,
+    location: { "@type": "VirtualLocation", url: `${SITE_URL}/match/${id}` },
+    competitor: [
+      { "@type": "SportsTeam", name: "Team A" },
+      { "@type": "SportsTeam", name: "Team B" },
+    ],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(eventLd).replace(/</g, "\\u003c") }}
+      />
       {/* Header band - mirrors the bot scoreboard header (team · score · map · score · team). */}
       <div className="glass match-head" style={{ display: "flex", alignItems: "center", padding: "18px 26px", marginBottom: 16 }}>
         <div className="mh-side" style={{ display: "flex", alignItems: "center", gap: 16, flex: 1 }}>

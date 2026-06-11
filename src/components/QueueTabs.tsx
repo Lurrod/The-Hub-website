@@ -1,11 +1,14 @@
 "use client";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { QUEUE_TYPES, QUEUE_LABELS, type QueueType } from "@/lib/db/types";
 
+// These tabs change the page's `?queue=` URL, so they are genuinely navigation
+// (not an ARIA tab widget). We render a <nav> with real links and mark the
+// active one with aria-current="page" — keyboard- and screen-reader-correct by
+// default, no roving tabindex or arrow-key handling to reinvent.
 export default function QueueTabs({ active, basePath }: { active: QueueType; basePath: string }) {
-  const router = useRouter();
-  const barRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLElement>(null);
   const pillRef = useRef<HTMLSpanElement>(null);
 
   // tabs-sliding: JS writes the active tab's offsetLeft / offsetWidth onto the
@@ -30,7 +33,7 @@ export default function QueueTabs({ active, basePath }: { active: QueueType; bas
   useEffect(() => {
     const bar = barRef.current;
     if (!bar) return;
-    const activeTab = () => bar.querySelector<HTMLElement>('[aria-selected="true"]');
+    const activeTab = () => bar.querySelector<HTMLElement>('[aria-current="page"]');
     const raf = requestAnimationFrame(() => moveTo(activeTab(), false));
     const onResize = () => moveTo(activeTab(), false);
     window.addEventListener("resize", onResize);
@@ -41,25 +44,23 @@ export default function QueueTabs({ active, basePath }: { active: QueueType; bas
   }, [active]);
 
   return (
-    <div className="t-tabs" role="tablist" ref={barRef} style={{ marginBottom: 12 }}>
+    <nav className="t-tabs" aria-label="Filter by queue" ref={barRef} style={{ marginBottom: 12 }}>
       <span className="t-tabs-pill" aria-hidden="true" ref={pillRef} />
       {QUEUE_TYPES.map((q) => (
-        <button
+        <Link
           key={q}
-          type="button"
-          role="tab"
+          href={`${basePath}?queue=${q}`}
           className="t-tab"
-          aria-selected={q === active}
+          aria-current={q === active ? "page" : undefined}
           data-q={q}
           onClick={(e) => {
             if (q === active) return;
             moveTo(e.currentTarget, true); // optimistic slide before navigation
-            router.push(`${basePath}?queue=${q}`);
           }}
         >
           {QUEUE_LABELS[q]}
-        </button>
+        </Link>
       ))}
-    </div>
+    </nav>
   );
 }

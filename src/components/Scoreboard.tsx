@@ -87,28 +87,29 @@ function TeamBlock({ title, players, won }: { title: string; players: Scoreboard
         {title}{won ? "  · WON" : ""}
       </div>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, tableLayout: "fixed" }}>
+        <caption className="sr-only">{title} scoreboard — {won ? "won" : "lost"}</caption>
         <colgroup>
           <col style={{ width: 220 }} />
           {COLS.map((c) => (<col key={c.key} style={c.key === "kda" ? { width: 96 } : undefined} />))}
         </colgroup>
         <thead>
           <tr style={{ background: "rgba(255,255,255,.03)" }}>
-            <th style={{ ...TH, textAlign: "left", paddingLeft: 18 }}>PLAYER</th>
+            <th scope="col" style={{ ...TH, textAlign: "left", paddingLeft: 18 }}>PLAYER</th>
             {COLS.map((c) => {
               const tip = colTip(c);
-              return (<th key={c.key} title={tip} style={{ ...TH, cursor: tip ? "help" : undefined }}>{c.label}</th>);
+              return (<th key={c.key} scope="col" title={tip} style={{ ...TH, cursor: tip ? "help" : undefined }}>{c.label}</th>);
             })}
           </tr>
         </thead>
         <tbody>
           {players.map((p, i) => (
             <tr key={p.userId} style={{ background: i % 2 ? "rgba(255,255,255,.025)" : "transparent" }}>
-              <td style={{ ...TD, textAlign: "left", padding: 0 }}>
+              <th scope="row" style={{ ...TD, textAlign: "left", padding: 0, fontWeight: 400 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px 8px 14px", borderLeft: `4px solid ${accent}` }}>
                   <AgentIcon agent={p.agent} />
                   <Link href={`/player/${p.userId}`} style={{ color: "var(--txt)", textDecoration: "none", fontWeight: 700, display: "inline-block", maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", verticalAlign: "middle" }}>{p.name}</Link>
                 </div>
-              </td>
+              </th>
               <td style={{ ...TD, fontWeight: 800, color: ratingColor(p.rating) }}>{p.rating.toFixed(2)}</td>
               <td style={TD}><Delta value={p.eloDelta} /></td>
               <td style={TD}>{Math.round(p.acs)}</td>

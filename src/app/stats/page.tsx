@@ -26,9 +26,9 @@ export default async function StatsPage({
 
   return (
     <>
-      <div style={{ textTransform: "uppercase", letterSpacing: 3, fontSize: 11, color: "var(--muted)", fontWeight: 700, margin: "20px 4px 12px" }}>
+      <h1 style={{ textTransform: "uppercase", letterSpacing: 3, fontSize: 11, color: "var(--muted)", fontWeight: 700, margin: "20px 4px 12px" }}>
         Stats - all players by queue
-      </div>
+      </h1>
       <QueueTabs active={queue} basePath="/stats" />
       <StatsTable lines={lines} />
     </>
