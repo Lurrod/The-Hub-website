@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { getQueueStatLines } from "@/lib/db/players";
+import { getCachedQueueStatLines } from "@/lib/db/players";
 import { QUEUE_TYPES, type QueueType } from "@/lib/db/types";
 import QueueTabs from "@/components/QueueTabs";
 import StatsTable from "@/components/StatsTable";
 
-export const revalidate = 60;
+// No `revalidate`: content is driven by the `?queue=` search param. A
+// revalidate would make the client Router Cache (keyed by pathname, not query)
+// reuse the first queue across tab switches. searchParams keeps it dynamic.
 export const metadata: Metadata = {
   title: "Stats",
   description: "Sortable player statistics — Rating, ACS, ADR, K/D, KAST and more across every ranked queue.",
@@ -20,7 +22,7 @@ export default async function StatsPage({
   searchParams: Promise<{ queue?: string }>;
 }) {
   const queue = parseQueue((await searchParams).queue);
-  const lines = await getQueueStatLines(queue, { minGames: 0 });
+  const lines = await getCachedQueueStatLines(queue, { minGames: 0 });
 
   return (
     <>

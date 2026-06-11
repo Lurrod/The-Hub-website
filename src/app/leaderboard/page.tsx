@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getQueueStatLines } from "@/lib/db/players";
+import { getCachedQueueStatLines } from "@/lib/db/players";
 import { rankLeaderboard } from "@/lib/stats/leaderboard";
 import { QUEUE_TYPES, type QueueType } from "@/lib/db/types";
 import { fmt } from "@/components/format";
 import QueueTabs from "@/components/QueueTabs";
 
-export const revalidate = 60;
-
+// No `revalidate`: this page's content is driven entirely by the `?queue=`
+// search param. Declaring a revalidate marks the segment "static" for the
+// client Router Cache, which keys by pathname (not query) and would reuse the
+// first-rendered queue across tab switches. Reading `searchParams` keeps it
+// dynamic so each queue navigation fetches fresh rankings.
 function parseQueue(v: string | undefined): QueueType {
   return (QUEUE_TYPES as string[]).includes(v ?? "") ? (v as QueueType) : "pro";
 }
@@ -23,7 +26,7 @@ export default async function Home({
   searchParams: Promise<{ queue?: string }>;
 }) {
   const queue = parseQueue((await searchParams).queue);
-  const lines = rankLeaderboard(await getQueueStatLines(queue, { minGames: 1 }));
+  const lines = rankLeaderboard(await getCachedQueueStatLines(queue, { minGames: 1 }));
 
   return (
     <>
