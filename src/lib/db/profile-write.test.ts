@@ -41,3 +41,47 @@ describe("updateWebProfile", () => {
     expect(doc2?.nationality).toBe("");
   });
 });
+
+describe("syncDiscordIdentity", () => {
+  type IdDoc = WebProfile & { discord_username?: string; discord_avatar?: string | null };
+
+  it("refreshes avatar/username on existing profiles without touching other fields", async () => {
+    const { updateWebProfile, syncDiscordIdentity } = await import("./profile-write");
+    const db = client.db("elobot");
+    await updateWebProfile(
+      "77",
+      { bio: "keep me", favorite_role: "Sentinel", nationality: "CA", socials: { twitch: "tw" }, vlr_url: "v", tracker_url: "t" },
+      { username: "OldName", avatar: "oldhash" },
+    );
+
+    await syncDiscordIdentity("77", { username: "NewName", avatar: "newhash" });
+
+    const doc = await db.collection<IdDoc>("web_profiles").findOne({ _id: "77" });
+    // identity refreshed
+    expect(doc?.discord_username).toBe("NewName");
+    expect(doc?.discord_avatar).toBe("newhash");
+    // everything else preserved
+    expect(doc?.bio).toBe("keep me");
+    expect(doc?.favorite_role).toBe("Sentinel");
+    expect(doc?.nationality).toBe("CA");
+    expect(doc?.socials?.twitch).toBe("tw");
+  });
+
+  it("upserts an identity-only doc for a first-time login", async () => {
+    const { syncDiscordIdentity } = await import("./profile-write");
+    const db = client.db("elobot");
+    await syncDiscordIdentity("99", { username: "Fresh", avatar: "h99" });
+    const doc = await db.collection<IdDoc>("web_profiles").findOne({ _id: "99" });
+    expect(doc?.discord_username).toBe("Fresh");
+    expect(doc?.discord_avatar).toBe("h99");
+    expect(doc?.bio).toBeUndefined();
+  });
+
+  it("is a no-op for an empty user id", async () => {
+    const { syncDiscordIdentity } = await import("./profile-write");
+    const db = client.db("elobot");
+    await syncDiscordIdentity("", { username: "Nobody", avatar: "x" });
+    const doc = await db.collection<IdDoc>("web_profiles").findOne({ _id: "" });
+    expect(doc).toBeNull();
+  });
+});

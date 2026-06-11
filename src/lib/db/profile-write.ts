@@ -39,3 +39,22 @@ export async function updateWebProfile(
     { upsert: true },
   );
 }
+
+/**
+ * Refresh ONLY the Discord identity (username + avatar) for `userId`, leaving
+ * any other web_profile fields untouched. Called on every login so a player's
+ * avatar stays current even if they never re-save their /me profile. Upserts so
+ * first-time logins still get an avatar on record.
+ */
+export async function syncDiscordIdentity(
+  userId: string,
+  identity: DiscordIdentity,
+): Promise<void> {
+  if (!userId) return;
+  const db = await getDb();
+  await db.collection<{ _id: string }>("web_profiles").updateOne(
+    { _id: userId },
+    { $set: { discord_username: identity.username, discord_avatar: identity.avatar } },
+    { upsert: true },
+  );
+}
