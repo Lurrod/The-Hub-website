@@ -54,7 +54,7 @@ export async function syncDiscordIdentity(
   const db = await getDb();
   await db.collection<{ _id: string }>("web_profiles").updateOne(
     { _id: userId },
-    { $set: { discord_username: identity.username, discord_avatar: identity.avatar } },
+    { $set: { discord_username: identity.username, discord_avatar: identity.avatar, last_seen: new Date() } },
     { upsert: true },
   );
 }

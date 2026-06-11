@@ -37,7 +37,8 @@ export default function CookiesPage() {
       <h2>What we do not use</h2>
       <p>
         We do <strong>not</strong> use advertising cookies, third-party tracking
-        cookies, or analytics that profile you. Because we only set strictly
+        cookies, or analytics that profile you. We keep anonymous, aggregated
+        visit statistics (no cookies, no profiling). Because we only set strictly
         necessary cookies, no consent banner is required for them.
       </p>
 
