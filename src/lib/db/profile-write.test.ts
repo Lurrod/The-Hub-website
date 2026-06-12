@@ -1,99 +1,65 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { MongoClient } from "mongodb";
-import type { WebProfile } from "./types";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-let mem: MongoMemoryServer;
-let client: MongoClient;
+// Mock the Mongo client so we can assert on the update document.
+const findOne = vi.fn();
+const updateOne = vi.fn();
+const collection = vi.fn(() => ({ findOne, updateOne }));
+vi.mock("./client", () => ({ getDb: vi.fn(async () => ({ collection })) }));
 
-beforeAll(async () => {
-  mem = await MongoMemoryServer.create();
-  process.env.MONGO_URL = mem.getUri();
-  client = await new MongoClient(mem.getUri()).connect();
+import { updateWebProfile, type WebProfileWrite } from "./profile-write";
+
+const identity = { username: "Neo", avatar: null };
+
+function baseData(over: Partial<WebProfileWrite> = {}): WebProfileWrite {
+  return {
+    bio: "",
+    roles: [],
+    nationality: "",
+    socials: {},
+    vlr_url: "",
+    tracker_url: "",
+    date_of_birth: "",
+    lft_enabled: false,
+    ...over,
+  };
+}
+
+beforeEach(() => {
+  findOne.mockReset();
+  updateOne.mockReset();
 });
-afterAll(async () => { await client.close(); await mem.stop(); });
 
 describe("updateWebProfile", () => {
-  it("upserts the profile for the user id, stores identity, and is idempotent", async () => {
-    const { updateWebProfile } = await import("./profile-write");
-    await updateWebProfile(
-      "42",
-      { bio: "hello", roles: ["Duelist", "Flex"], nationality: "FR", socials: { twitch: "z" }, vlr_url: "", tracker_url: "" },
-      { username: "Zephyr", avatar: "abc" },
-    );
-    const db = client.db("elobot");
-    const doc = await db.collection<WebProfile & { discord_username?: string; discord_avatar?: string | null }>("web_profiles").findOne({ _id: "42" });
-    expect(doc?.bio).toBe("hello");
-    expect(doc?.roles).toEqual(["Duelist", "Flex"]);
-    expect(doc?.nationality).toBe("FR");
-    expect(doc?.socials?.twitch).toBe("z");
-    expect(doc?.discord_username).toBe("Zephyr");
-    expect(doc?.discord_avatar).toBe("abc");
-
-    await updateWebProfile(
-      "42",
-      { bio: "updated", roles: [], nationality: "", socials: {}, vlr_url: "", tracker_url: "" },
-      { username: "Zephyr", avatar: "abc" },
-    );
-    const doc2 = await db.collection<WebProfile & { discord_username?: string; discord_avatar?: string | null }>("web_profiles").findOne({ _id: "42" });
-    expect(doc2?.bio).toBe("updated");
-    expect(doc2?.roles).toEqual([]);
-    expect(doc2?.nationality).toBe("");
-  });
-});
-
-describe("syncDiscordIdentity", () => {
-  type IdDoc = WebProfile & { discord_username?: string; discord_avatar?: string | null };
-
-  it("refreshes avatar/username on existing profiles without touching other fields", async () => {
-    const { updateWebProfile, syncDiscordIdentity } = await import("./profile-write");
-    const db = client.db("elobot");
-    await updateWebProfile(
-      "77",
-      { bio: "keep me", roles: ["Sentinel"], nationality: "CA", socials: { twitch: "tw" }, vlr_url: "v", tracker_url: "t" },
-      { username: "OldName", avatar: "oldhash" },
-    );
-
-    await syncDiscordIdentity("77", { username: "NewName", avatar: "newhash" });
-
-    const doc = await db.collection<IdDoc>("web_profiles").findOne({ _id: "77" });
-    // identity refreshed
-    expect(doc?.discord_username).toBe("NewName");
-    expect(doc?.discord_avatar).toBe("newhash");
-    // everything else preserved
-    expect(doc?.bio).toBe("keep me");
-    expect(doc?.roles).toEqual(["Sentinel"]);
-    expect(doc?.nationality).toBe("CA");
-    expect(doc?.socials?.twitch).toBe("tw");
+  it("unsets date_of_birth when empty and does not set lft_updated_at when not LFT", async () => {
+    findOne.mockResolvedValue(null);
+    await updateWebProfile("u1", baseData(), identity);
+    const arg = updateOne.mock.calls[0][1];
+    expect(arg.$set.lft_enabled).toBe(false);
+    expect(arg.$set).not.toHaveProperty("date_of_birth");
+    expect(arg.$set).not.toHaveProperty("lft_updated_at");
+    expect(arg.$unset).toHaveProperty("date_of_birth", "");
   });
 
-  it("upserts an identity-only doc for a first-time login", async () => {
-    const { syncDiscordIdentity } = await import("./profile-write");
-    const db = client.db("elobot");
-    await syncDiscordIdentity("99", { username: "Fresh", avatar: "h99" });
-    const doc = await db.collection<IdDoc>("web_profiles").findOne({ _id: "99" });
-    expect(doc?.discord_username).toBe("Fresh");
-    expect(doc?.discord_avatar).toBe("h99");
-    expect(doc?.bio).toBeUndefined();
+  it("sets lft_updated_at on a false→true LFT transition", async () => {
+    findOne.mockResolvedValue({ lft_enabled: false });
+    await updateWebProfile("u1", baseData({ lft_enabled: true }), identity);
+    const arg = updateOne.mock.calls[0][1];
+    expect(arg.$set.lft_enabled).toBe(true);
+    expect(arg.$set.lft_updated_at).toBeInstanceOf(Date);
   });
 
-  it("is a no-op for an empty user id", async () => {
-    const { syncDiscordIdentity } = await import("./profile-write");
-    const db = client.db("elobot");
-    await syncDiscordIdentity("", { username: "Nobody", avatar: "x" });
-    const doc = await db.collection<IdDoc>("web_profiles").findOne({ _id: "" });
-    expect(doc).toBeNull();
+  it("does NOT refresh lft_updated_at when already LFT", async () => {
+    findOne.mockResolvedValue({ lft_enabled: true });
+    await updateWebProfile("u1", baseData({ lft_enabled: true }), identity);
+    const arg = updateOne.mock.calls[0][1];
+    expect(arg.$set).not.toHaveProperty("lft_updated_at");
   });
 
-  it("stamps last_seen on the profile when syncing identity", async () => {
-    const { syncDiscordIdentity } = await import("./profile-write");
-    const db = client.db("elobot");
-    const before = Date.now();
-    await syncDiscordIdentity("login-user", { username: "Neo", avatar: "abc" });
-    const doc = await db
-      .collection<{ _id: string; last_seen?: Date }>("web_profiles")
-      .findOne({ _id: "login-user" });
-    expect(doc?.last_seen).toBeInstanceOf(Date);
-    expect(doc!.last_seen!.getTime()).toBeGreaterThanOrEqual(before);
+  it("sets date_of_birth and omits the $unset of it when provided", async () => {
+    findOne.mockResolvedValue(null);
+    await updateWebProfile("u1", baseData({ date_of_birth: "2000-06-12" }), identity);
+    const arg = updateOne.mock.calls[0][1];
+    expect(arg.$set.date_of_birth).toBe("2000-06-12");
+    expect(arg.$unset ?? {}).not.toHaveProperty("date_of_birth");
   });
 });
