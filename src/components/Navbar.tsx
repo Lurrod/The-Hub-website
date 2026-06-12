@@ -19,6 +19,7 @@ export default async function Navbar() {
         <Link href="/leaderboard" style={{ color: "inherit", textDecoration: "none" }}>Leaderboards</Link>
         <Link href="/stats" style={{ color: "inherit", textDecoration: "none" }}>Stats</Link>
         <Link href="/matches" style={{ color: "inherit", textDecoration: "none" }}>Matches</Link>
+        <Link href="/lft" style={{ color: "inherit", textDecoration: "none" }}>LFT</Link>
       </div>
       {session ? (
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
