@@ -38,6 +38,10 @@ describe("ageRangeToDobWindow", () => {
   it("no bounds returns empty window", () => {
     expect(ageRangeToDobWindow(undefined, undefined, NOW)).toEqual({});
   });
+  it("normalizes a leap-day now for the minAge bound (no invalid Feb 29)", () => {
+    const leapNow = new Date(Date.UTC(2024, 1, 29));
+    expect(ageRangeToDobWindow(18, undefined, leapNow)).toEqual({ lte: "2006-03-01" });
+  });
 });
 
 describe("isValidDob", () => {

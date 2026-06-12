@@ -57,7 +57,8 @@ export function ageRangeToDobWindow(
   const win: { gte?: string; lte?: string } = {};
   if (minAge !== undefined) {
     // age >= minAge  <=>  dob <= today - minAge years
-    win.lte = fmt(y - minAge, m, d);
+    const minDate = new Date(Date.UTC(y - minAge, m - 1, d));
+    win.lte = fmt(minDate.getUTCFullYear(), minDate.getUTCMonth() + 1, minDate.getUTCDate());
   }
   if (maxAge !== undefined) {
     // age <= maxAge  <=>  dob >= today - (maxAge+1) years + 1 day
