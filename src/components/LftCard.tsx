@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Avatar from "./Avatar";
 import type { LftPlayer } from "@/lib/db/lft";
+import { flagUrl } from "@/lib/profile/countries";
 
 export default function LftCard({ player }: { player: LftPlayer }) {
   const avatarSrc = player.avatar
@@ -29,7 +30,7 @@ export default function LftCard({ player }: { player: LftPlayer }) {
         <span style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--muted)", fontSize: 12, flexWrap: "wrap" }}>
           {player.nationality && (
             <Image
-              src={`https://flagcdn.com/24x18/${player.nationality.toLowerCase()}.png`}
+              src={flagUrl(player.nationality)}
               alt={player.nationality}
               width={20}
               height={15}
