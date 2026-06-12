@@ -2,7 +2,8 @@
 import { auth } from "@/auth";
 import { profileSchema } from "@/lib/profile/schema";
 import { updateWebProfile } from "@/lib/db/profile-write";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { LFT_PLAYERS_TAG } from "@/lib/db/lft";
 
 export type SaveResult = { ok: true } | { ok: false; error: string };
 
@@ -50,5 +51,6 @@ export async function saveProfile(
   );
   revalidatePath(`/player/${session.discordId}`);
   revalidatePath("/me");
+  revalidateTag(LFT_PLAYERS_TAG, "max");
   return { ok: true };
 }
