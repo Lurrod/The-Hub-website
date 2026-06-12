@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { isCountryCode } from "./countries";
+import { isValidDob } from "./age";
 
 export const ROLES = ["Duelist", "Initiator", "Controller", "Sentinel", "Flex"] as const;
 
@@ -35,6 +36,19 @@ function urlOnDomain(domains: string[]) {
     .or(z.literal(""));
 }
 
+const dateOfBirth = z
+  .string()
+  .trim()
+  .refine((v) => v === "" || isValidDob(v, new Date()), {
+    message: "Invalid date of birth (age must be 13–100)",
+  });
+
+// A checkbox submits "on" when checked and is absent (→ "") when not.
+const lftEnabled = z
+  .preprocess((v) => v === "on" || v === "true" || v === true, z.boolean())
+  .optional()
+  .default(false);
+
 export const profileSchema = z.object({
   bio: z.string().trim().max(280).optional().default(""),
   // Players can pick several roles (incl. "Flex"). Deduped, order-preserving.
@@ -50,6 +64,8 @@ export const profileSchema = z.object({
   youtube: urlOnDomain(["youtube.com", "youtu.be"]).optional().default(""),
   vlr_url: urlOnDomain(["vlr.gg"]).optional().default(""),
   tracker_url: urlOnDomain(["tracker.gg"]).optional().default(""),
+  date_of_birth: dateOfBirth.optional().default(""),
+  lft_enabled: lftEnabled,
 });
 
 export type ProfileInput = z.infer<typeof profileSchema>;
