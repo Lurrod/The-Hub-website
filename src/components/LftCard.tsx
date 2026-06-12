@@ -8,6 +8,7 @@ export default function LftCard({ player }: { player: LftPlayer }) {
   const avatarSrc = player.avatar
     ? `https://cdn.discordapp.com/avatars/${player.userId}/${player.avatar}.png`
     : null;
+  const flag = player.nationality ? flagUrl(player.nationality) : "";
   return (
     <Link
       href={`/player/${player.userId}`}
@@ -28,10 +29,10 @@ export default function LftCard({ player }: { player: LftPlayer }) {
           {player.username}
         </span>
         <span style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--muted)", fontSize: 12, flexWrap: "wrap" }}>
-          {player.nationality && (
+          {flag && (
             <Image
-              src={flagUrl(player.nationality)}
-              alt={player.nationality}
+              src={flag}
+              alt={player.nationality ?? ""}
               width={20}
               height={15}
               style={{ borderRadius: 2, display: "block" }}
