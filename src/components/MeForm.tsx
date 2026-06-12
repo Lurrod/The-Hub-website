@@ -15,6 +15,8 @@ interface Initial {
   youtube: string;
   vlr_url: string;
   tracker_url: string;
+  date_of_birth: string;
+  lft_enabled: boolean;
 }
 
 const input: React.CSSProperties = {
@@ -241,6 +243,36 @@ export default function MeForm({
           style={input}
         />
       </Field>
+
+      <Field label="Date of birth (only your age is shown publicly)">
+        <input
+          type="date"
+          name="date_of_birth"
+          defaultValue={initial.date_of_birth}
+          max="9999-12-31"
+          style={input}
+        />
+      </Field>
+
+      <label
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          cursor: "pointer",
+          userSelect: "none",
+        }}
+      >
+        <input
+          type="checkbox"
+          name="lft_enabled"
+          defaultChecked={initial.lft_enabled}
+          style={{ width: 16, height: 16, accentColor: "var(--red)" }}
+        />
+        <span style={{ ...fieldLabel, textTransform: "none", letterSpacing: 0, fontSize: 13 }}>
+          Looking For Team (LFT) — show me on the LFT page
+        </span>
+      </label>
 
       <div ref={wrapRef} className="t-input-wrap">
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>

@@ -2,7 +2,8 @@
 import { auth } from "@/auth";
 import { profileSchema } from "@/lib/profile/schema";
 import { updateWebProfile } from "@/lib/db/profile-write";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { LFT_PLAYERS_TAG } from "@/lib/db/lft";
 
 export type SaveResult = { ok: true } | { ok: false; error: string };
 
@@ -22,6 +23,8 @@ export async function saveProfile(
     youtube: formData.get("youtube") ?? "",
     vlr_url: formData.get("vlr_url") ?? "",
     tracker_url: formData.get("tracker_url") ?? "",
+    date_of_birth: formData.get("date_of_birth") ?? "",
+    lft_enabled: formData.get("lft_enabled") ?? "",
   });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input." };
@@ -41,10 +44,13 @@ export async function saveProfile(
       },
       vlr_url: d.vlr_url,
       tracker_url: d.tracker_url,
+      date_of_birth: d.date_of_birth,
+      lft_enabled: d.lft_enabled,
     },
     { username: session.username, avatar: session.avatar },
   );
   revalidatePath(`/player/${session.discordId}`);
   revalidatePath("/me");
+  revalidateTag(LFT_PLAYERS_TAG, "max");
   return { ok: true };
 }

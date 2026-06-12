@@ -68,6 +68,12 @@ export interface WebProfile {
   vlr_url?: string;
   tracker_url?: string;
   updated_at?: Date;
+  /** Birth date "YYYY-MM-DD". Stored privately; only derived age is exposed. */
+  date_of_birth?: string;
+  /** Player is "Looking For Team". */
+  lft_enabled?: boolean;
+  /** Set when lft_enabled transitions to true; used to sort LFT listings. */
+  lft_updated_at?: Date;
   discord_username?: string;
   discord_avatar?: string | null;
 }

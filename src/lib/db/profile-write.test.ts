@@ -18,7 +18,7 @@ describe("updateWebProfile", () => {
     const { updateWebProfile } = await import("./profile-write");
     await updateWebProfile(
       "42",
-      { bio: "hello", roles: ["Duelist", "Flex"], nationality: "FR", socials: { twitch: "z" }, vlr_url: "", tracker_url: "" },
+      { bio: "hello", roles: ["Duelist", "Flex"], nationality: "FR", socials: { twitch: "z" }, vlr_url: "", tracker_url: "", date_of_birth: "", lft_enabled: false },
       { username: "Zephyr", avatar: "abc" },
     );
     const db = client.db("elobot");
@@ -32,7 +32,7 @@ describe("updateWebProfile", () => {
 
     await updateWebProfile(
       "42",
-      { bio: "updated", roles: [], nationality: "", socials: {}, vlr_url: "", tracker_url: "" },
+      { bio: "updated", roles: [], nationality: "", socials: {}, vlr_url: "", tracker_url: "", date_of_birth: "", lft_enabled: false },
       { username: "Zephyr", avatar: "abc" },
     );
     const doc2 = await db.collection<WebProfile & { discord_username?: string; discord_avatar?: string | null }>("web_profiles").findOne({ _id: "42" });
@@ -50,7 +50,7 @@ describe("syncDiscordIdentity", () => {
     const db = client.db("elobot");
     await updateWebProfile(
       "77",
-      { bio: "keep me", roles: ["Sentinel"], nationality: "CA", socials: { twitch: "tw" }, vlr_url: "v", tracker_url: "t" },
+      { bio: "keep me", roles: ["Sentinel"], nationality: "CA", socials: { twitch: "tw" }, vlr_url: "v", tracker_url: "t", date_of_birth: "", lft_enabled: false },
       { username: "OldName", avatar: "oldhash" },
     );
 
@@ -95,5 +95,53 @@ describe("syncDiscordIdentity", () => {
       .findOne({ _id: "login-user" });
     expect(doc?.last_seen).toBeInstanceOf(Date);
     expect(doc!.last_seen!.getTime()).toBeGreaterThanOrEqual(before);
+  });
+});
+
+describe("updateWebProfile — DOB + LFT", () => {
+  it("stores date_of_birth when provided and unsets it when cleared", async () => {
+    const { updateWebProfile } = await import("./profile-write");
+    const db = client.db("elobot");
+    await updateWebProfile(
+      "dob1",
+      { bio: "", roles: [], nationality: "", socials: {}, vlr_url: "", tracker_url: "", date_of_birth: "2000-06-12", lft_enabled: false },
+      { username: "A", avatar: null },
+    );
+    let doc = await db.collection<WebProfile>("web_profiles").findOne({ _id: "dob1" });
+    expect(doc?.date_of_birth).toBe("2000-06-12");
+
+    await updateWebProfile(
+      "dob1",
+      { bio: "", roles: [], nationality: "", socials: {}, vlr_url: "", tracker_url: "", date_of_birth: "", lft_enabled: false },
+      { username: "A", avatar: null },
+    );
+    doc = await db.collection<WebProfile>("web_profiles").findOne({ _id: "dob1" });
+    expect(doc?.date_of_birth).toBeUndefined();
+  });
+
+  it("stamps lft_updated_at on a false→true transition and not again while staying true", async () => {
+    const { updateWebProfile } = await import("./profile-write");
+    const db = client.db("elobot");
+    const write = (lft: boolean) =>
+      updateWebProfile(
+        "lft1",
+        { bio: "", roles: [], nationality: "", socials: {}, vlr_url: "", tracker_url: "", date_of_birth: "", lft_enabled: lft },
+        { username: "A", avatar: null },
+      );
+
+    await write(false);
+    let doc = await db.collection<WebProfile>("web_profiles").findOne({ _id: "lft1" });
+    expect(doc?.lft_enabled).toBe(false);
+    expect(doc?.lft_updated_at).toBeUndefined();
+
+    await write(true);
+    doc = await db.collection<WebProfile>("web_profiles").findOne({ _id: "lft1" });
+    expect(doc?.lft_enabled).toBe(true);
+    expect(doc?.lft_updated_at).toBeInstanceOf(Date);
+    const firstStamp = doc!.lft_updated_at!.getTime();
+
+    await write(true);
+    doc = await db.collection<WebProfile>("web_profiles").findOne({ _id: "lft1" });
+    expect(doc?.lft_updated_at?.getTime()).toBe(firstStamp);
   });
 });

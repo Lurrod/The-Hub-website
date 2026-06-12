@@ -7,6 +7,8 @@ export interface WebProfileWrite {
   socials: { twitch?: string; twitter?: string; youtube?: string };
   vlr_url: string;
   tracker_url: string;
+  date_of_birth: string;
+  lft_enabled: boolean;
 }
 
 export interface DiscordIdentity {
@@ -21,25 +23,35 @@ export async function updateWebProfile(
   identity: DiscordIdentity,
 ): Promise<void> {
   const db = await getDb();
-  await db.collection<{ _id: string }>("web_profiles").updateOne(
+  const coll = db.collection<{ _id: string; lft_enabled?: boolean }>("web_profiles");
+
+  const existing = await coll.findOne(
     { _id: userId },
-    {
-      $set: {
-        bio: data.bio,
-        roles: data.roles,
-        nationality: data.nationality,
-        socials: data.socials,
-        vlr_url: data.vlr_url,
-        tracker_url: data.tracker_url,
-        discord_username: identity.username,
-        discord_avatar: identity.avatar,
-        updated_at: new Date(),
-      },
-      // Drop the legacy single-role field once a profile is re-saved.
-      $unset: { favorite_role: "" },
-    },
-    { upsert: true },
+    { projection: { lft_enabled: 1 } },
   );
+  const wasLft = existing?.lft_enabled === true;
+
+  const set: Record<string, unknown> = {
+    bio: data.bio,
+    roles: data.roles,
+    nationality: data.nationality,
+    socials: data.socials,
+    vlr_url: data.vlr_url,
+    tracker_url: data.tracker_url,
+    lft_enabled: data.lft_enabled,
+    discord_username: identity.username,
+    discord_avatar: identity.avatar,
+    updated_at: new Date(),
+  };
+  // Only stamp the LFT timestamp on a fresh opt-in so listings sort by it.
+  if (data.lft_enabled && !wasLft) set.lft_updated_at = new Date();
+
+  // Legacy single-role field is always dropped on re-save.
+  const unset: Record<string, ""> = { favorite_role: "" };
+  if (data.date_of_birth) set.date_of_birth = data.date_of_birth;
+  else unset.date_of_birth = "";
+
+  await coll.updateOne({ _id: userId }, { $set: set, $unset: unset }, { upsert: true });
 }
 
 /**

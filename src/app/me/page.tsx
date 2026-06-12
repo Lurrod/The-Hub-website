@@ -82,6 +82,8 @@ export default async function MePage() {
           youtube: wp?.socials?.youtube ?? "",
           vlr_url: wp?.vlr_url ?? "",
           tracker_url: wp?.tracker_url ?? "",
+          date_of_birth: wp?.date_of_birth ?? "",
+          lft_enabled: wp?.lft_enabled ?? false,
         }}
         viewHref={`/player/${session.discordId}`}
       />
