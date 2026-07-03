@@ -6,206 +6,347 @@ export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 const DISCORD_INVITE = "https://discord.com/invite/aSZNHuhJg5";
 
-/** The two halves of the system. */
-const PILLARS: { tag: string; name: string; lead: string; points: string[] }[] = [
-  {
-    tag: "In Discord",
-    name: "The Bot",
-    lead: "A Discord bot runs the entire match lifecycle - you never touch a spreadsheet.",
-    points: [
-      "Click Join to queue, the bot does the matchmaking",
-      "Brute-force balanced 5v5 teams by ELO",
-      "Spins up private match rooms, picks a map & host",
-      "Tallies result votes and updates the ladder",
-    ],
-  },
-  {
-    tag: "On the web",
-    name: "The Site",
-    lead: "This site is the public archive of everything the bot produces - open to all.",
-    points: [
-      "Per-queue ELO leaderboards",
-      "Deep stats: Rating 2.0, ACS, ADR, KAST, HS%",
-      "Full 10-player scoreboards, round-by-round",
-      "Discord-linked profiles you control",
-    ],
-  },
+/** Three plain facts about the system, shown as a quiet meta row. */
+const FACTS = ["5v5", "ELO-balanced", "Verified by HenrikDev"];
+
+/** A stylised, static preview of what the product actually produces:
+    a finished 10-man scoreboard. Not live data — a cinematic showcase card. */
+const BOARD = {
+  tag: "THE HUB · MATCH #1287",
+  map: "Ascent",
+  teamA: { name: "TEAM A", score: 13 },
+  teamB: { name: "TEAM B", score: 9 },
+  rows: [
+    { name: "zeru", color: "var(--red)", kda: "24 / 14 / 8", rating: "1.42" },
+    { name: "milo", color: "var(--cyan)", kda: "19 / 16 / 5", rating: "1.18" },
+    { name: "kayo.", color: "var(--violet)", kda: "17 / 15 / 11", rating: "1.09" },
+    { name: "nova", color: "var(--blue)", kda: "13 / 17 / 9", rating: "0.94" },
+  ] as { name: string; color: string; kda: string; rating: string }[],
+};
+
+/** The full match lifecycle, condensed to three beats. Each is a hand-drawn tile
+    on the hero scoreboard's palette (dark glass + cool accents) — no raster assets. */
+type StepKind = "queue" | "vote" | "elo";
+const STEPS: { n: string; kind: StepKind; accent: string; title: string; desc: string }[] = [
+  { n: "01", kind: "queue", accent: "var(--cyan)", title: "Queue in Discord", desc: "Hit Join on your queue. The bot matchmakes and brute-forces a balanced 5v5 by ELO." },
+  { n: "02", kind: "vote", accent: "var(--gold)", title: "Play & vote", desc: "A private room spawns with a picked map and host. Seven of ten votes settle the result." },
+  { n: "03", kind: "elo", accent: "var(--green)", title: "It lands here", desc: "Stats are verified from the real game, ELO is applied, and the match becomes a scoreboard." },
 ];
 
-/** A match, start to finish. */
-const FLOW: { n: string; title: string; text: string }[] = [
-  { n: "01", title: "Queue up", text: "Hit Join on your queue's pinned message in Discord. Four ladders run in parallel: Pro, Semi Pro, Open and GC." },
-  { n: "02", title: "Teams balanced", text: "At 10/10 the bot brute-forces the fairest split across all 126 possible 5v5s, minimizing the ELO gap." },
-  { n: "03", title: "Match room spawns", text: "A private Match #N category appears with team voice channels, a picked map and an assigned lobby host." },
-  { n: "04", title: "Play & vote", text: "Play the custom, then vote the winner. Seven of ten votes validate the result - no admin needed." },
-  { n: "05", title: "Stats verified", text: "The bot pulls the real game from HenrikDev and weights each player's ELO swing by their ACS." },
-  { n: "06", title: "It lands here", text: "ELO applies per-player, the leaderboard refreshes, and the match becomes a profile and scoreboard on this site." },
+/** The site is, at heart, an index of the archive. Each tile previews a real
+    page with a small illustration and a short tag — image over prose. */
+type ArchiveKind = "board" | "stats" | "match" | "profile";
+const INDEX: { name: string; href: string; kind: ArchiveKind; tag: string; accent: string }[] = [
+  { name: "Leaderboards", href: "/leaderboard", kind: "board", tag: "ELO ladders", accent: "var(--gold)" },
+  { name: "Stats", href: "/stats", kind: "stats", tag: "Rating · ACS · HS%", accent: "var(--cyan)" },
+  { name: "Matches", href: "/matches", kind: "match", tag: "Scoreboards", accent: "var(--violet)" },
+  { name: "Profiles", href: "/me", kind: "profile", tag: "Discord-linked", accent: "var(--blue)" },
 ];
 
-const QUEUES: { name: string; gate: string; blurb: string; color: string }[] = [
-  { name: "Pro", gate: "FL PRO", blurb: "VCL / VCT level - access granted after a quick staff review.", color: "#f1c40f" },
-  { name: "Semi Pro", gate: "FL SEMIPRO", blurb: "Top VRC level - access granted after a quick staff review.", color: "#0021a5" },
-  { name: "Open", gate: "FL OPEN", blurb: "Open to everyone - access is granted instantly.", color: "#88fbb8" },
-  { name: "GC", gate: "FL GC", blurb: "Open to Game Changers only - staff-reviewed.", color: "#08ff00" },
-];
-
-/** What a member actually types / clicks. */
-const COMMANDS: { cmd: string; arg?: string; desc: string }[] = [
-  { cmd: "Join", desc: "Persistent button on each queue - your way into a match." },
-  { cmd: "/link-riot", arg: " riot_id:", desc: "Link your Valorant account. EU, Immortal+ required." },
-  { cmd: "/unlink-riot", desc: "Remove the Riot link from your Discord." },
-  { cmd: "/help", arg: " type:", desc: "The full list of member commands." },
+/** Four ladders run in parallel — the page's single, quiet splash of colour. */
+const LADDERS: { name: string; gate: string; access: string; color: string }[] = [
+  { name: "Pro", gate: "FL PRO", access: "VCL / VCT level — staff-reviewed.", color: "var(--red)" },
+  { name: "Semi Pro", gate: "FL SEMIPRO", access: "Top VRC level — staff-reviewed.", color: "var(--cyan)" },
+  { name: "Open", gate: "FL OPEN", access: "Open to everyone — instant access.", color: "var(--violet)" },
+  { name: "GC", gate: "FL GC", access: "Game Changers only — staff-reviewed.", color: "var(--blue)" },
 ];
 
 export default function Landing() {
   return (
     <div className={s.page}>
-      <span className={s.scan} aria-hidden />
-
       {/* ───────────────────────── HERO ───────────────────────── */}
-      <section className={s.hero}>
-        <p className={`${s.kicker} ${s.reveal}`}>
-          Fast Learner × The Hub
-        </p>
-        <h1 className={`${s.title} ${s.reveal}`} style={{ animationDelay: "0.08s" }}>
-          <span className={s.l1}>Valorant 10-mans,</span>
-          <span className={s.l2}>Run by <span className={s.accent}>Fast Learner × The Hub</span></span>
-        </h1>
-        <p className={`${s.lead} ${s.reveal}`} style={{ animationDelay: "0.16s" }}>
-          A Discord bot runs the whole match lifecycle - <b>queues</b>, balanced teams,
-          result votes and <b>performance ELO</b>. This site is the public home for every
-          profile, ladder and scoreboard it produces.
-        </p>
-        <div className={`${s.ctas} ${s.reveal}`} style={{ animationDelay: "0.24s" }}>
-          <a
-            href={DISCORD_INVITE}
-            target="_blank"
-            rel="noreferrer"
-            className={`${s.cta} ${s.ctaDiscord}`}
-          >
-            <DiscordMark /> Join the Discord
-          </a>
-          <Link href="/leaderboard" className={`${s.cta} ${s.ctaGhost}`}>Explore the ladders</Link>
-          <a href="#how" className={s.ctaText}>How it works ↓</a>
-        </div>
-      </section>
+      <header className={s.hero}>
+        <div className={s.heroBloom} aria-hidden />
+        <div className={s.heroGrid}>
+          <div className={s.heroText}>
+            <p className={`${s.kicker} ${s.reveal}`}>Fast Learner × The Hub</p>
+            <h1 className={`${s.title} ${s.reveal}`} style={{ animationDelay: "0.07s" }}>
+              <span className={s.titleLine}>Valorant</span>
+              <span className={`${s.titleLine} ${s.titleAccent}`}>10-mans</span>
+            </h1>
+            <p className={`${s.lead} ${s.reveal}`} style={{ animationDelay: "0.14s" }}>
+              A Discord bot runs every queue, balanced team and result vote.
+              This site is the public record of everything it produces.
+            </p>
+            <div className={`${s.actions} ${s.reveal}`} style={{ animationDelay: "0.21s" }}>
+              <a href={DISCORD_INVITE} target="_blank" rel="noreferrer" className={s.primary}>
+                Join the Discord
+              </a>
+              <Link href="/leaderboard" className={s.secondary}>
+                Explore the ladders <span aria-hidden>→</span>
+              </Link>
+            </div>
+            <ul className={`${s.facts} ${s.reveal}`} style={{ animationDelay: "0.28s" }}>
+              {FACTS.map((f) => (
+                <li key={f}>{f}</li>
+              ))}
+            </ul>
+          </div>
 
-      {/* ───────────────────── TWO PILLARS ───────────────────── */}
-      <section>
-        <SectionHead num="01" title="Two halves, one system" />
-        <div className={s.split}>
-          {PILLARS.map((p, i) => (
-            <article key={p.name} className={`${s.pillar} ${s.reveal}`} style={{ animationDelay: `${0.06 * i}s` }}>
-              <div className={s.pillarTop}>
-                <span className={s.pillarTag}>{p.tag}</span>
-                <h3 className={s.pillarName}>{p.name}</h3>
+          {/* stylised product preview — a finished scoreboard, floating */}
+          <div className={`${s.heroPreview} ${s.reveal}`} style={{ animationDelay: "0.18s" }} aria-hidden>
+            <div className={s.eloChip}>
+              ELO <b>+24</b>
+            </div>
+            <div className={s.board}>
+              <div className={s.boardHead}>
+                <span className={s.boardTag}>{BOARD.tag}</span>
+                <span className={s.boardMap}>{BOARD.map}</span>
               </div>
-              <p className={s.pillarLead}>{p.lead}</p>
-              <ul className={s.pillarList}>
-                {p.points.map((pt) => (
-                  <li key={pt}><span className={s.tick} aria-hidden />{pt}</li>
+              <div className={s.boardScore}>
+                <span className={s.scoreTeam}>{BOARD.teamA.name}</span>
+                <span className={s.scoreWin}>{BOARD.teamA.score}</span>
+                <span className={s.scoreDash}>—</span>
+                <span className={s.scoreLoss}>{BOARD.teamB.score}</span>
+                <span className={`${s.scoreTeam} ${s.scoreTeamR}`}>{BOARD.teamB.name}</span>
+              </div>
+              <div className={s.boardRows}>
+                {BOARD.rows.map((r) => (
+                  <div key={r.name} className={s.boardRow}>
+                    <span className={s.brDot} style={{ background: r.color }} />
+                    <span className={s.brName}>{r.name}</span>
+                    <span className={s.brKda}>{r.kda}</span>
+                    <span className={s.brRating}>{r.rating}</span>
+                  </div>
                 ))}
-              </ul>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* ───────────────────── MATCH FLOW ───────────────────── */}
-      <section id="how">
-        <SectionHead num="02" title="How a match works" />
-        <div className={s.flow}>
-          <span className={s.flowLine} aria-hidden />
-          {FLOW.map((f, i) => (
-            <article key={f.n} className={`${s.step} ${s.reveal}`} style={{ animationDelay: `${0.05 * i}s` }}>
-              <span className={s.stepNum}>{f.n}</span>
-              <div className={s.stepBody}>
-                <h3>{f.title}</h3>
-                <p>{f.text}</p>
               </div>
-            </article>
-          ))}
+            </div>
+          </div>
         </div>
-      </section>
+      </header>
 
-      {/* ───────────────────── QUEUES ───────────────────── */}
+      {/* ───────────────────────── HOW IT WORKS ───────────────────────── */}
       <section>
-        <SectionHead num="03" title="Four queues, four ladders" />
-        <div className={s.ladder}>
-          {QUEUES.map((q, i) => (
-            <Link
-              key={q.name}
-              href="/leaderboard"
-              className={`${s.lrow} ${s.reveal}`}
-              style={{ "--qc": q.color, animationDelay: `${0.05 * i}s` } as React.CSSProperties}
+        <SectionLabel n="01" text="How it works" />
+        <div className={s.steps}>
+          {STEPS.map((st, i) => (
+            <article
+              key={st.n}
+              className={`${s.step} ${s.reveal}`}
+              style={{ animationDelay: `${i * 0.06}s`, ["--accent" as string]: st.accent }}
             >
-              <span className={s.lindex} aria-hidden>{String(i + 1).padStart(2, "0")}</span>
-              <div className={s.lmain}>
-                <div className={s.lhead}>
-                  <span className={s.lname}>{q.name}</span>
-                  <span className={s.lgate}>{q.gate}</span>
-                </div>
-                <p className={s.lblurb}>{q.blurb}</p>
+              <div className={s.stepArt} style={{ color: st.accent }} aria-hidden>
+                <StepArt kind={st.kind} />
               </div>
-              <span className={s.larrow} aria-hidden>→</span>
+              <span className={s.stepBadge}>{st.n}</span>
+              <h3 className={s.stepTitle}>{st.title}</h3>
+              <p className={s.stepDesc}>{st.desc}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* ───────────────────────── INDEX ───────────────────────── */}
+      <section>
+        <SectionLabel n="02" text="Browse the archive" />
+        <nav className={s.archGrid} aria-label="Browse the archive">
+          {INDEX.map((it, i) => (
+            <Link
+              key={it.name}
+              href={it.href}
+              className={`${s.archCard} ${s.reveal}`}
+              style={{ animationDelay: `${i * 0.05}s`, ["--accent" as string]: it.accent }}
+            >
+              <div className={s.archArt} style={{ color: it.accent }} aria-hidden>
+                <ArchiveArt kind={it.kind} />
+              </div>
+              <span className={s.archFoot}>
+                <span className={s.archText}>
+                  <span className={s.archName}>{it.name}</span>
+                  <span className={s.archTag}>{it.tag}</span>
+                </span>
+                <span className={s.archArrow} aria-hidden>→</span>
+              </span>
             </Link>
           ))}
-        </div>
+        </nav>
       </section>
 
-      {/* ───────────────────── COMMANDS / TERMINAL ───────────────────── */}
+      {/* ───────────────────────── LADDERS ───────────────────────── */}
       <section>
-        <SectionHead num="04" title="What you do" />
-        <div className={`${s.terminal} ${s.reveal}`}>
-          <div className={s.termBar}>
-            <span className={s.termDot} style={{ background: "var(--violet)" }} />
-            <span className={s.termDot} style={{ background: "var(--gold)" }} />
-            <span className={s.termDot} style={{ background: "var(--cyan)" }} />
-            <span className={s.termTitle}>the-hub · member actions</span>
-          </div>
-          <div className={s.termBody}>
-            {COMMANDS.map((c) => (
-              <div key={c.cmd} className={s.cmdRow}>
-                <code className={s.cmd}>
-                  {c.cmd}{c.arg && <span className={s.cmdArg}>{c.arg}</span>}
-                </code>
-                <span className={s.cmdDesc}>{c.desc}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <SectionLabel n="03" text="Four ladders" />
+        <ul className={s.ladders}>
+          {LADDERS.map((q, i) => (
+            <li
+              key={q.name}
+              className={`${s.ladder} ${s.reveal}`}
+              style={{ animationDelay: `${i * 0.05}s`, ["--accent" as string]: q.color }}
+            >
+              <span className={s.dot} style={{ background: q.color }} aria-hidden />
+              <span className={s.ladderName}>{q.name}</span>
+              <span className={s.ladderGate}>{q.gate}</span>
+              <span className={s.ladderAccess}>{q.access}</span>
+            </li>
+          ))}
+        </ul>
       </section>
 
-      {/* ───────────────────── FINAL BAND ───────────────────── */}
-      <div className={`${s.band} ${s.reveal}`}>
-        <div className={s.bandGlow} aria-hidden />
-        <h2>Ready up.</h2>
-        <p>Join the server, link your Riot account, and queue your first 10-man.</p>
-        <div className={s.bandCtas}>
-          <a href={DISCORD_INVITE} target="_blank" rel="noreferrer" className={`${s.cta} ${s.ctaDiscord}`}>
-            <DiscordMark /> Join the Discord
-          </a>
-          <Link href="/me" className={`${s.cta} ${s.ctaGhost}`}>Claim your profile</Link>
-        </div>
-      </div>
+      {/* ───────────────────────── CLOSING ───────────────────────── */}
+      <footer className={`${s.close} ${s.reveal}`}>
+        <p className={s.closeLine}>Ready when you are.</p>
+        <a href={DISCORD_INVITE} target="_blank" rel="noreferrer" className={s.primary}>
+          Join the server <span aria-hidden>→</span>
+        </a>
+      </footer>
     </div>
   );
 }
 
-function SectionHead({ num, title }: { num: string; title: string }) {
-  return (
-    <div className={`${s.shead} ${s.reveal}`}>
-      <span className={s.snum}>{`// ${num}`}</span>
-      <h2>{title}</h2>
-      <span className={s.srule} aria-hidden />
-    </div>
-  );
-}
+/** Neutral tones shared by every illustration (scoreboard palette): faint whites
+    for structure, with the accent carried by `currentColor` and the scoreboard's
+    semantic colours (green = positive, gold = rating) where they apply. */
+const NEUTRAL = "rgba(255,255,255,0.26)";
+const FAINT = "rgba(255,255,255,0.14)";
 
-function DiscordMark() {
+function StepArt({ kind }: { kind: StepKind }) {
+  if (kind === "queue") {
+    // symmetrical: two little teams meeting in the middle, balanced ELO bars
+    const dots = [0, 1, 2, 3, 4];
+    return (
+      <svg viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation">
+        {dots.map((d) => (
+          <circle key={`a${d}`} cx={34 + d * 22} cy={68} r={8.5} fill="currentColor" />
+        ))}
+        {dots.map((d) => (
+          <circle key={`b${d}`} cx={196 + d * 22} cy={68} r={8.5} fill="none" stroke={NEUTRAL} strokeWidth="2" />
+        ))}
+        <rect x="140" y="55" width="40" height="26" rx="13" fill="none" stroke="currentColor" strokeWidth="1.6" />
+        <text x="160" y="73" fill="var(--txt)" fontSize="14" fontWeight="700" fontFamily="var(--font-teko), sans-serif" textAnchor="middle">5v5</text>
+        <rect x="28" y="106" width="106" height="12" rx="6" fill="currentColor" opacity="0.9" />
+        <rect x="186" y="106" width="106" height="12" rx="6" fill={NEUTRAL} />
+        <text x="160" y="150" fill="var(--muted)" fontSize="10.5" letterSpacing="3" fontFamily="monospace" textAnchor="middle">BALANCED · ELO</text>
+      </svg>
+    );
+  }
+  if (kind === "vote") {
+    // radial: a 70% ring settling the vote, with the tally beneath
+    const C = 2 * Math.PI * 46;
+    return (
+      <svg viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation">
+        <circle cx="160" cy="78" r="46" stroke={FAINT} strokeWidth="12" />
+        <circle
+          cx="160"
+          cy="78"
+          r="46"
+          stroke="currentColor"
+          strokeWidth="12"
+          strokeLinecap="round"
+          strokeDasharray={`${C * 0.7} ${C}`}
+          transform="rotate(-90 160 78)"
+        />
+        <path d="M143 78 l11 12 l24 -26" stroke="currentColor" strokeWidth="8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <text x="160" y="148" fill="var(--txt)" fontSize="15" fontWeight="700" fontFamily="var(--font-teko), sans-serif" letterSpacing="1.5" textAnchor="middle">7 / 10 VOTES</text>
+      </svg>
+    );
+  }
+  // the result: a finished scoreboard beat — win in green, +ELO chip, gold rating
   return (
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden>
-      <path d="M20.32 4.37a19.8 19.8 0 0 0-4.93-1.51.07.07 0 0 0-.08.04c-.21.38-.45.87-.61 1.26a18.3 18.3 0 0 0-5.4 0c-.16-.4-.4-.88-.62-1.26a.08.08 0 0 0-.08-.04c-1.7.29-3.35.8-4.93 1.51a.07.07 0 0 0-.03.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 0 0 .03.06 19.9 19.9 0 0 0 6 3.03.08.08 0 0 0 .09-.03c.46-.63.87-1.3 1.23-2a.08.08 0 0 0-.04-.11c-.65-.25-1.27-.55-1.87-.89a.08.08 0 0 1 0-.13l.37-.29a.07.07 0 0 1 .08-.01c3.93 1.79 8.18 1.79 12.06 0a.07.07 0 0 1 .08 0l.37.3a.08.08 0 0 1 0 .13c-.6.34-1.22.64-1.87.89a.08.08 0 0 0-.04.11c.36.7.78 1.36 1.23 2a.08.08 0 0 0 .09.03 19.8 19.8 0 0 0 6.01-3.03.08.08 0 0 0 .03-.06c.5-5.18-.84-9.67-3.55-13.66a.06.06 0 0 0-.03-.03ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42Zm7.97 0c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.95 2.42-2.16 2.42Z" />
+    <svg viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation">
+      <rect x="214" y="26" width="66" height="26" rx="13" fill="var(--green)" />
+      <text x="247" y="44" fill="#04120c" fontSize="13" fontWeight="700" fontFamily="monospace" textAnchor="middle">+24</text>
+      <text x="150" y="102" textAnchor="middle" fontFamily="var(--font-teko), sans-serif" fontWeight="700" fontSize="58">
+        <tspan fill="var(--green)">13</tspan>
+        <tspan fill={FAINT} dx="10">—</tspan>
+        <tspan fill="var(--muted)" dx="10">9</tspan>
+      </text>
+      <text x="160" y="146" textAnchor="middle" fill="var(--gold)" fontSize="12" fontWeight="600" letterSpacing="2" fontFamily="monospace">RATING 1.42</text>
     </svg>
+  );
+}
+
+/** Small stylised preview of each archive page, in the site's cool product
+    tone: line/shape art in the tile's accent (currentColor) over faint whites. */
+function ArchiveArt({ kind }: { kind: ArchiveKind }) {
+  const W = "rgba(255,255,255,0.24)";
+  const Wd = "rgba(255,255,255,0.14)";
+  if (kind === "board") {
+    // a ranked leaderboard: rank chip + name bar + value, top row lit
+    return (
+      <svg viewBox="0 0 200 130" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation">
+        {[0, 1, 2].map((i) => {
+          const y = 22 + i * 32;
+          const top = i === 0;
+          return (
+            <g key={i}>
+              <rect x="18" y={y} width="24" height="24" rx="7" fill={top ? "currentColor" : Wd} />
+              <rect x="52" y={y + 6} width={108 - i * 18} height="12" rx="6" fill={W} />
+              <rect x="152" y={y + 6} width="30" height="12" rx="6" fill={top ? "currentColor" : Wd} />
+            </g>
+          );
+        })}
+      </svg>
+    );
+  }
+  if (kind === "stats") {
+    // a small bar chart with a trend line riding the tops
+    const bars: [number, number][] = [
+      [30, 52],
+      [60, 34],
+      [90, 66],
+      [120, 48],
+      [150, 78],
+    ];
+    const pts = bars.map(([x, h]) => [x + 9, 106 - h]);
+    return (
+      <svg viewBox="0 0 200 130" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation">
+        {bars.map(([x, h], i) => (
+          <rect key={x} x={x} y={106 - h} width="18" height={h} rx="4" fill={i === bars.length - 1 ? "currentColor" : Wd} />
+        ))}
+        <polyline points={pts.map((p) => p.join(",")).join(" ")} stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        {pts.map((p) => (
+          <circle key={p.join()} cx={p[0]} cy={p[1]} r="3.2" fill="currentColor" />
+        ))}
+      </svg>
+    );
+  }
+  if (kind === "match") {
+    // a mini scoreboard: team labels, big score, two rows of player pips
+    return (
+      <svg viewBox="0 0 200 130" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation">
+        <text x="22" y="28" fill={W} fontSize="11" letterSpacing="2" fontFamily="monospace">TEAM A</text>
+        <text x="178" y="28" textAnchor="end" fill={W} fontSize="11" letterSpacing="2" fontFamily="monospace">TEAM B</text>
+        <text x="100" y="76" textAnchor="middle" fontFamily="var(--font-teko), sans-serif" fontWeight="700" fontSize="44">
+          <tspan fill="var(--green)">13</tspan>
+          <tspan fill={Wd} dx="8">—</tspan>
+          <tspan fill="var(--muted)" dx="8">9</tspan>
+        </text>
+        <line x1="22" y1="92" x2="178" y2="92" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        {[0, 1, 2, 3, 4].map((c) => (
+          <circle key={`a${c}`} cx={34 + c * 14} cy="106" r="3.2" fill="currentColor" opacity="0.85" />
+        ))}
+        {[0, 1, 2, 3, 4].map((c) => (
+          <circle key={`b${c}`} cx={110 + c * 14} cy="106" r="3.2" fill={W} />
+        ))}
+      </svg>
+    );
+  }
+  // profile: avatar silhouette + name/handle bars + two stat pills
+  return (
+    <svg viewBox="0 0 200 130" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation">
+      <defs>
+        <clipPath id="arch-pf">
+          <circle cx="52" cy="52" r="25" />
+        </clipPath>
+      </defs>
+      <circle cx="52" cy="52" r="26" fill="rgba(255,255,255,0.08)" />
+      <g clipPath="url(#arch-pf)">
+        <circle cx="52" cy="46" r="11" fill="currentColor" />
+        <circle cx="52" cy="82" r="20" fill="currentColor" />
+      </g>
+      <circle cx="52" cy="52" r="26" fill="none" stroke="currentColor" strokeWidth="2.5" />
+      <rect x="96" y="38" width="84" height="13" rx="6.5" fill={W} />
+      <rect x="96" y="60" width="52" height="10" rx="5" fill={Wd} />
+      <rect x="20" y="96" width="76" height="20" rx="10" fill="rgba(255,255,255,0.05)" stroke="currentColor" strokeWidth="1.4" opacity="0.75" />
+      <rect x="104" y="96" width="76" height="20" rx="10" fill="rgba(255,255,255,0.05)" stroke="currentColor" strokeWidth="1.4" opacity="0.75" />
+    </svg>
+  );
+}
+
+function SectionLabel({ n, text }: { n: string; text: string }) {
+  return (
+    <p className={`${s.sectionLabel} ${s.reveal}`}>
+      <span className={s.sectionNum}>{n}</span>
+      {text}
+    </p>
   );
 }
